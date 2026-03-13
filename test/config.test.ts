@@ -2,7 +2,7 @@ import path from "node:path";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
-import { loadConfig } from "../src/config.js";
+import { loadConfig } from "../src/config";
 
 const tempDirs: string[] = [];
 

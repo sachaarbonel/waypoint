@@ -1,6 +1,6 @@
 import path from "node:path";
 import pc from "picocolors";
-import type { Finding, ScanResult } from "../types.js";
+import type { Finding, ScanResult } from "../types";
 
 export function formatTextReport(result: ScanResult): string {
   const lines = [

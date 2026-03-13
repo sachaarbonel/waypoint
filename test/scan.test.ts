@@ -3,9 +3,9 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
-import { applySafeFixes } from "../src/fixes/index.js";
-import { installSkillBundles } from "../src/skills/index.js";
-import { scanWorkspace } from "../src/analyzer/index.js";
+import { applySafeFixes } from "../src/fixes/index";
+import { installSkillBundles } from "../src/skills/index";
+import { scanWorkspace } from "../src/analyzer/index";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const fixtureRoot = path.join(testDir, "fixtures", "monorepo");

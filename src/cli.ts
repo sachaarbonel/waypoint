@@ -2,13 +2,13 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { formatJsonReport, formatMarkdownReport, formatSarifReport, formatTextReport } from "./reporters/index.js";
-import { applySafeFixes } from "./fixes/index.js";
-import { installSkillBundles } from "./skills/index.js";
-import { scanWorkspace } from "./analyzer/index.js";
-import { loadConfig } from "./config.js";
-import { discoverWorkspace } from "./workspace.js";
-import { normalizePath } from "./utils/fs.js";
+import { formatJsonReport, formatMarkdownReport, formatSarifReport, formatTextReport } from "./reporters/index";
+import { applySafeFixes } from "./fixes/index";
+import { installSkillBundles } from "./skills/index";
+import { scanWorkspace } from "./analyzer/index";
+import { loadConfig } from "./config";
+import { discoverWorkspace } from "./workspace";
+import { normalizePath } from "./utils/fs";
 
 type Format = "text" | "json" | "sarif" | "markdown";
 type CommandName = "scan" | "fix" | "init" | "doctor" | "skill-install";

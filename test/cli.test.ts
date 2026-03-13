@@ -3,7 +3,7 @@ import path from "node:path";
 import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
-import { parseCliArgs, runCli } from "../src/cli.js";
+import { parseCliArgs, runCli } from "../src/cli";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const fixtureRoot = path.join(testDir, "fixtures", "monorepo");

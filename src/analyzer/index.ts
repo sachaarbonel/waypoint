@@ -1,9 +1,9 @@
 import path from "node:path";
 import { Project } from "ts-morph";
-import { loadConfig } from "../config.js";
-import { discoverWorkspace, matchesIgnore } from "../workspace.js";
-import type { Finding, ScanOptions, ScanResult } from "../types.js";
-import { runRules } from "./rules.js";
+import { loadConfig } from "../config";
+import { discoverWorkspace, matchesIgnore } from "../workspace";
+import type { Finding, ScanOptions, ScanResult } from "../types";
+import { runRules } from "./rules";
 
 export async function scanWorkspace(options: ScanOptions): Promise<ScanResult> {
   const config = await loadConfig(options.cwd);

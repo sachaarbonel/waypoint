@@ -15,9 +15,9 @@ import type {
   NormalizedRuleConfig,
   Workspace,
   WorkspacePackage,
-} from "../types.js";
-import { getChurnMap } from "../utils/git.js";
-import { normalizePath } from "../utils/fs.js";
+} from "../types";
+import { getChurnMap } from "../utils/git";
+import { normalizePath } from "../utils/fs";
 
 interface RuleContext {
   workspace: Workspace;

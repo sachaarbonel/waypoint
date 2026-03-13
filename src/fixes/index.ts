@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { Project, SyntaxKind } from "ts-morph";
-import type { FixPlan, FixResult, Finding, TextEdit } from "../types.js";
+import type { FixPlan, FixResult, Finding, TextEdit } from "../types";
 
 export function applySafeFixes(findings: Finding[], apply: boolean): FixResult {
   const safeFindings = findings.filter((finding) => finding.fix?.safe);

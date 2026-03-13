@@ -1,5 +1,5 @@
 import path from "node:path";
-import { ensureDir, writeText } from "../utils/fs.js";
+import { ensureDir, writeText } from "../utils/fs";
 
 const skillReadme = `---
 name: wayweft

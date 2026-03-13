@@ -10,7 +10,7 @@ import type {
   WayweftConfig,
   RuleConfigMap,
   RuleThresholds,
-} from "./types.js";
+} from "./types";
 
 const configSchema: z.ZodType<WayweftConfig> = z.object({
   workspace: z

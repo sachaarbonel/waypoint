@@ -3,9 +3,9 @@ import path from "node:path";
 import fg from "fast-glob";
 import yaml from "js-yaml";
 import { minimatch } from "minimatch";
-import type { NormalizedConfig, ScanTarget, Workspace, WorkspacePackage } from "./types.js";
-import { getChangedFiles } from "./utils/git.js";
-import { normalizePath } from "./utils/fs.js";
+import type { NormalizedConfig, ScanTarget, Workspace, WorkspacePackage } from "./types";
+import { getChangedFiles } from "./utils/git";
+import { normalizePath } from "./utils/fs";
 
 interface PackageManifest {
   name?: string;
