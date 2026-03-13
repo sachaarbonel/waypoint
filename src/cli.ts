@@ -6,6 +6,9 @@ import { formatJsonReport, formatMarkdownReport, formatSarifReport, formatTextRe
 import { applySafeFixes } from "./fixes/index.js";
 import { installSkillBundles } from "./skills/index.js";
 import { scanWorkspace } from "./analyzer/index.js";
+import { loadConfig } from "./config.js";
+import { discoverWorkspace } from "./workspace.js";
+import { normalizePath } from "./utils/fs.js";
 
 type Format = "text" | "json" | "sarif" | "markdown";
 type CommandName = "scan" | "fix" | "init" | "doctor" | "skill-install";
@@ -367,17 +370,49 @@ async function runSkillInstall(cwd: string): Promise<string> {
 }
 
 async function runDoctor(cwd: string): Promise<string> {
-  const result = await scanWorkspace({
-    cwd,
-    target: { scope: "workspace" },
-    maxFindings: 1,
+  const configPath = findConfigPath(cwd);
+  const config = await loadConfig(cwd);
+  const workspace = await discoverWorkspace(cwd, config, { scope: "workspace" });
+  const packageLines = workspace.packages.map((pkg) => {
+    const relativeDir = normalizePath(path.relative(workspace.rootDir, pkg.dir)) || ".";
+    const tsconfigLabel = pkg.tsconfigPath ? "tsconfig" : "no tsconfig";
+    return `  - ${pkg.name} (${relativeDir}, ${tsconfigLabel})`;
   });
+  const ignoreSource = configPath ? "from config" : "built-in defaults";
+  const skillPaths = [
+    path.join(workspace.rootDir, "tools", "wayweft-skill", "SKILL.md"),
+    path.join(workspace.rootDir, ".agents", "skills", "wayweft", "SKILL.md"),
+    path.join(workspace.rootDir, ".claude", "skills", "wayweft", "SKILL.md"),
+  ];
+  const installedSkillBundles = skillPaths.filter((skillPath) => existsSync(skillPath)).length;
+  const packageDirs = workspace.packages.filter((pkg) => path.resolve(pkg.dir) !== path.resolve(workspace.rootDir));
+  const packageSkillBundles = packageDirs.filter((pkg) =>
+    existsSync(path.join(pkg.dir, ".agents", "skills", "wayweft", "SKILL.md")) &&
+    existsSync(path.join(pkg.dir, ".claude", "skills", "wayweft", "SKILL.md")),
+  ).length;
+
   return [
-    `Workspace root: ${result.workspace.rootDir}`,
-    `Packages: ${result.workspace.packages.length}`,
-    `Files: ${result.workspace.fileInventory.length}`,
+    `Workspace root: ${workspace.rootDir}`,
+    `Config: ${configPath ?? "not found (using built-in defaults)"}`,
+    `Discovery markers: ${config.workspace.rootMarkers.join(", ")}`,
+    `Package globs: ${config.workspace.packageGlobs.join(", ")}`,
+    `Packages discovered: ${workspace.packages.length}`,
+    ...(packageLines.length > 0 ? packageLines : ["  - none"]),
+    `Tsconfig files: ${workspace.tsconfigGraph.size}`,
+    `Files in scan inventory: ${workspace.fileInventory.length}`,
+    `Ignore patterns (${ignoreSource}):`,
+    ...config.ignore.map((pattern) => `  - ${pattern}`),
+    "Skill bundles:",
+    `  - root bundle files: ${installedSkillBundles}/3 installed`,
+    `  - package-local bundles: ${packageSkillBundles}/${packageDirs.length} packages`,
     "Doctor checks: ok",
   ].join("\n");
+}
+
+function findConfigPath(cwd: string): string | undefined {
+  return ["wayweft.config.ts", "wayweft.config.js", "wayweft.config.json"]
+    .map((candidate) => path.join(cwd, candidate))
+    .find((candidate) => existsSync(candidate));
 }
 
 function formatResult(result: Awaited<ReturnType<typeof scanWorkspace>>, format: Format): string {

@@ -39,6 +39,12 @@ Run a dry-run safe fix pass:
 wayweft fix --cwd /path/to/project --dry-run
 ```
 
+Inspect setup and discovery assumptions:
+
+```bash
+wayweft doctor --cwd /path/to/project
+```
+
 ## Agent workflow basics
 
 Wayweft is designed to complement agent sessions:

@@ -14,7 +14,9 @@ This changelog is intentionally lightweight. Record user-visible features, fixes
 - Added a branded landing page at `/` and moved the documentation to `/docs/`.
 - Added starter documentation for setup, CLI usage, configuration, CI, roadmap, and branding direction.
 - Added CLI `--cwd` support and basic `--help` output for the primary commands.
+- Added a dedicated `doctor` CLI reference page with sample setup-debugging output.
 
 ### Changed
 
 - Added project guidance requiring documentation updates alongside feature and fix work.
+- Expanded `wayweft doctor` to report config resolution, package and tsconfig discovery, active ignore patterns, and skill bundle installation status.

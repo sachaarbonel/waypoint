@@ -34,6 +34,7 @@ export default defineConfig({
           items: [
             { label: "scan", slug: "docs/cli/scan" },
             { label: "fix", slug: "docs/cli/fix" },
+            { label: "doctor", slug: "docs/cli/doctor" },
             { label: "skill install", slug: "docs/cli/skill-install" },
           ],
         },

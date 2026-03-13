@@ -63,6 +63,28 @@ wayweft skill install --cwd /path/to/project
 wayweft doctor --cwd /path/to/project
 ```
 
+`doctor` is intended as a setup-debugging command. A typical run shows the resolved workspace root, config status, discovery assumptions, active ignore patterns, and skill bundle installation state:
+
+```text
+Workspace root: /path/to/project
+Config: /path/to/project/wayweft.config.ts
+Discovery markers: pnpm-workspace.yaml, turbo.json, nx.json, rush.json, package.json, .git
+Package globs: apps/*, packages/*, services/*, libs/*
+Packages discovered: 3
+  - root (., tsconfig)
+  - web (apps/web, tsconfig)
+  - shared (packages/shared, no tsconfig)
+Tsconfig files: 2
+Files in scan inventory: 84
+Ignore patterns (from config):
+  - **/dist/**
+  - **/coverage/**
+Skill bundles:
+  - root bundle files: 3/3 installed
+  - package-local bundles: 2/3 packages
+Doctor checks: ok
+```
+
 ## Install the skill in a target repo
 
 Install the skill bundle into a target repository with the built CLI:
