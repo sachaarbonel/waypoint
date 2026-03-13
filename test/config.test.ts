@@ -2,7 +2,7 @@ import path from "node:path";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
-import { loadConfig } from "../src/config";
+import { defaultIgnorePatterns, loadConfig, normalizeConfig } from "../src/config";
 
 const tempDirs: string[] = [];
 
@@ -40,6 +40,16 @@ describe("loadConfig", () => {
     const config = await loadConfig(rootDir);
 
     expect(config.analysis.minScore).toBe(5);
+    expect(config.ignore).toContain("**/custom-generated/**");
+  });
+
+  it("allows config to extend the built-in ignore defaults", () => {
+    const config = normalizeConfig({
+      ignore: [...defaultIgnorePatterns, "**/custom-generated/**"],
+    });
+
+    expect(config.ignore).toContain("**/dist/**");
+    expect(config.ignore).toContain("**/*.min.js");
     expect(config.ignore).toContain("**/custom-generated/**");
   });
 });

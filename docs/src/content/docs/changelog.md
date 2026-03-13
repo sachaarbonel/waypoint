@@ -8,8 +8,14 @@ This changelog is intentionally lightweight. Record user-visible features, fixes
 
 ## 2026-03-13
 
+### Fixed
+
+- Added broader built-in ignore defaults for generated output and vendored assets, including `build`, `.next`, `vendor`, and `*.min.js`.
+- Documented how to extend built-in ignore defaults with `defaultIgnorePatterns` or override them completely with `ignore: []`.
+
 ### Added
 
+- Added scan coverage that proves generated and vendored files stay out of the default inventory unless a repo opts back in.
 - Introduced a self-hosted Astro + Starlight documentation site under `docs/`.
 - Added a branded landing page at `/` and moved the documentation to `/docs/`.
 - Added starter documentation for setup, CLI usage, configuration, CI, roadmap, and branding direction.

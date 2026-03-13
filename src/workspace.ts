@@ -49,7 +49,7 @@ export async function discoverWorkspace(
       cwd: rootDir,
       absolute: true,
       ignore: config.ignore,
-      dot: false,
+      dot: true,
     },
   );
 

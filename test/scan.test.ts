@@ -1,5 +1,5 @@
 import path from "node:path";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
@@ -58,4 +58,57 @@ describe("scanWorkspace", () => {
     expect(written.some((entry) => entry.includes(".agents/skills/wayweft"))).toBe(true);
     expect(written.some((entry) => entry.includes(".claude/skills/wayweft"))).toBe(true);
   });
+
+  it("ignores generated and vendored files by default but allows opting back in", async () => {
+    const rootDir = mkdtempSync(path.join(tmpdir(), "wayweft-ignore-"));
+    tempDirs.push(rootDir);
+    writeWorkspaceFile(rootDir, "package.json", JSON.stringify({ name: "ignore-fixture" }, null, 2));
+    writeWorkspaceFile(rootDir, "src/index.ts", "export const value = 1;\n");
+    writeWorkspaceFile(rootDir, "dist/generated.ts", "export const distValue = 2;\n");
+    writeWorkspaceFile(rootDir, "build/generated.ts", "export const buildValue = 3;\n");
+    writeWorkspaceFile(rootDir, ".next/server/page.ts", "export const nextValue = 4;\n");
+    writeWorkspaceFile(rootDir, "coverage/report.ts", "export const coverageValue = 5;\n");
+    writeWorkspaceFile(rootDir, "__snapshots__/component.ts", "export const snapshotValue = 6;\n");
+    writeWorkspaceFile(rootDir, "vendor/library.ts", "export const vendorValue = 7;\n");
+    writeWorkspaceFile(rootDir, "public/app.min.js", "export const minifiedValue = 8;\n");
+    writeWorkspaceFile(rootDir, "types/schema.generated.ts", "export const generatedValue = 9;\n");
+
+    const defaultResult = await scanWorkspace({
+      cwd: rootDir,
+      target: { scope: "workspace" },
+      minScore: 0,
+    });
+    writeWorkspaceFile(rootDir, "wayweft.config.json", JSON.stringify({ ignore: [] }, null, 2));
+    const optedInResult = await scanWorkspace({
+      cwd: rootDir,
+      target: { scope: "workspace" },
+      minScore: 0,
+    });
+
+    const defaultInventory = defaultResult.workspace.fileInventory.map((filePath) =>
+      path.relative(defaultResult.workspace.rootDir, filePath),
+    );
+    const optedInInventory = optedInResult.workspace.fileInventory.map((filePath) =>
+      path.relative(optedInResult.workspace.rootDir, filePath),
+    );
+
+    expect(defaultInventory).toEqual(["src/index.ts"]);
+    expect(optedInInventory).toEqual(expect.arrayContaining([
+      ".next/server/page.ts",
+      "__snapshots__/component.ts",
+      "build/generated.ts",
+      "coverage/report.ts",
+      "dist/generated.ts",
+      "public/app.min.js",
+      "src/index.ts",
+      "types/schema.generated.ts",
+      "vendor/library.ts",
+    ]));
+  });
 });
+
+function writeWorkspaceFile(rootDir: string, relativePath: string, content: string) {
+  const filePath = path.join(rootDir, relativePath);
+  mkdirSync(path.dirname(filePath), { recursive: true });
+  writeFileSync(filePath, content.endsWith("\n") ? content : `${content}\n`, "utf8");
+}
