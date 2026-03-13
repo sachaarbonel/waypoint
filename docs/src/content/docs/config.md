@@ -26,6 +26,8 @@ Built-in defaults keep obvious scan noise out of the file inventory:
 - generated source files matching `*.generated.*`
 - vendored assets such as `vendor/`, `vendors/`, and `*.min.js`
 
+Wayweft also reads root and nested `.gitignore` and `.ignore` files while it walks the workspace, so repo-local ignore rules prune the scan inventory before analysis runs.
+
 ## Extending or overriding ignores
 
 Use repo-local config when you want to scan something Wayweft would normally skip or when your repo has extra generated paths:

@@ -12,6 +12,7 @@ This changelog is intentionally lightweight. Record user-visible features, fixes
 
 - Added broader built-in ignore defaults for generated output and vendored assets, including `build`, `.next`, `vendor`, and `*.min.js`.
 - Documented how to extend built-in ignore defaults with `defaultIgnorePatterns` or override them completely with `ignore: []`.
+- Switched scan inventory discovery to a gitignore-style walker that respects root and nested `.gitignore` and `.ignore` files.
 
 ### Added
 

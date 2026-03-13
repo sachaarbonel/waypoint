@@ -121,6 +121,11 @@ Wayweft skips obvious generated and vendored files by default so scans stay focu
 - vendored assets such as `vendor/`, `vendors/`, and `*.min.js`
 - dependency and support directories such as `node_modules`, `fixtures`, and `migrations`
 
+Wayweft also respects repo ignore files during traversal:
+
+- root and nested `.gitignore`
+- root and nested `.ignore`
+
 You can override the defaults completely with `ignore: []` in `wayweft.config.*`, or extend them in TypeScript config files:
 
 ```ts

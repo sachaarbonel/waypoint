@@ -105,6 +105,41 @@ describe("scanWorkspace", () => {
       "vendor/library.ts",
     ]));
   });
+
+  it("respects root and nested ignore files during inventory discovery", async () => {
+    const rootDir = mkdtempSync(path.join(tmpdir(), "wayweft-gitignore-"));
+    tempDirs.push(rootDir);
+    writeWorkspaceFile(
+      rootDir,
+      "package.json",
+      JSON.stringify({ name: "gitignore-fixture", workspaces: ["packages/*"] }, null, 2),
+    );
+    writeWorkspaceFile(rootDir, "src/index.ts", "export const value = 1;\n");
+    writeWorkspaceFile(rootDir, "ignored-root/skip.ts", "export const skipped = 2;\n");
+    writeWorkspaceFile(rootDir, "packages/app/src/keep.ts", "export const kept = 3;\n");
+    writeWorkspaceFile(rootDir, "packages/app/generated/skip.ts", "export const generated = 4;\n");
+    writeWorkspaceFile(rootDir, "packages/app/generated/keep.ts", "export const optIn = 5;\n");
+    writeWorkspaceFile(rootDir, ".gitignore", "ignored-root/\n");
+    writeWorkspaceFile(rootDir, "packages/app/.ignore", "generated/*\n!generated/keep.ts\n");
+
+    const result = await scanWorkspace({
+      cwd: rootDir,
+      target: { scope: "workspace" },
+      minScore: 0,
+    });
+
+    const inventory = result.workspace.fileInventory.map((filePath) =>
+      path.relative(result.workspace.rootDir, filePath),
+    );
+
+    expect(inventory).toEqual(expect.arrayContaining([
+      "packages/app/generated/keep.ts",
+      "packages/app/src/keep.ts",
+      "src/index.ts",
+    ]));
+    expect(inventory).not.toContain("ignored-root/skip.ts");
+    expect(inventory).not.toContain("packages/app/generated/skip.ts");
+  });
 });
 
 function writeWorkspaceFile(rootDir: string, relativePath: string, content: string) {
