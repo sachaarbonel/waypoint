@@ -1,5 +1,5 @@
 ---
-name: refactor-scout
+name: wayweft
 description: Analyze a TypeScript repo or monorepo for concrete refactoring opportunities, rank the findings, and optionally apply safe codemods. Use for code smell detection, monorepo hotspot analysis, complexity reduction, duplicate utility detection, and scoped cleanup work.
 ---
 
@@ -14,7 +14,7 @@ When invoked:
    - If the session touched multiple packages or shared infrastructure, widen to workspace scope.
 
 3. Run:
-   - `refactor-scout scan --scope changed --since origin/main --format json --output .tmp/refactor-scout.json`
+   - `wayweft scan --scope changed --since origin/main --format json --output .tmp/wayweft.json`
    - If changed scope is too narrow for the task, rerun with `--scope package:<name>` or `--scope workspace`.
 
 4. Read the report and prioritize:

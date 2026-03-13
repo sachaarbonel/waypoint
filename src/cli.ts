@@ -76,11 +76,11 @@ async function runFix(parsed: ParsedArgs) {
 }
 
 function runInit(cwd: string) {
-  const configPath = path.join(cwd, "refactor-scout.config.ts");
+  const configPath = path.join(cwd, "wayweft.config.ts");
   if (!existsSync(configPath)) {
     writeFileSync(
       configPath,
-      `import { defineConfig } from "refactor-scout";
+      `import { defineConfig } from "wayweft";
 
 export default defineConfig({
   workspace: {
@@ -106,7 +106,7 @@ export default defineConfig({
     );
   }
   installSkillBundles({ rootDir: cwd });
-  process.stdout.write("Initialized refactor-scout config and skill bundles.\n");
+  process.stdout.write("Initialized Wayweft config and skill bundles.\n");
 }
 
 async function runSkillInstall(cwd: string) {

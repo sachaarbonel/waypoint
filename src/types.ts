@@ -61,7 +61,7 @@ export interface PackageOverrideConfig {
   ignore?: string[];
 }
 
-export interface RefactorScoutConfig {
+export interface WayweftConfig {
   workspace?: WorkspaceConfig;
   analysis?: AnalysisConfig;
   rules?: RuleConfigMap;

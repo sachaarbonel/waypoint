@@ -1,5 +1,8 @@
-# refactor-scout
-A TypeScript-first, AST-based refactoring opportunity engine for single-package repos and monorepos, with CLI, CI, JSON/SARIF output, codemod support, and agent-facing integrations for Codex and Claude
+# Wayweft
+
+Wayweft is a codebase intelligence layer for AI-assisted development. It helps teams review changes after a Claude or Codex session, detect duplication and refactor drift, preserve codebase context, and carry knowledge forward across sessions.
+
+Today, Wayweft includes a TypeScript-first CLI for changed-scope review, refactoring opportunity detection, safe cleanup workflows, and agent-facing skill bundles for Codex and Claude.
 
 ## Status
 
@@ -20,11 +23,11 @@ npm install
 npm run build
 npm run test
 
-refactor-scout scan --scope workspace --format text
-refactor-scout scan --scope package:<name> --format json --output .tmp/refactor-scout.json
-refactor-scout fix --dry-run
-refactor-scout skill install
-refactor-scout doctor
+wayweft scan --scope workspace --format text
+wayweft scan --scope package:<name> --format json --output .tmp/wayweft.json
+wayweft fix --dry-run
+wayweft skill install
+wayweft doctor
 ```
 
 ## Run locally on a project
@@ -40,12 +43,12 @@ Then scan a target project by changing into that project directory and invoking 
 
 ```bash
 cd /path/to/project
-node /absolute/path/to/refactor-scout/dist/cli.js scan --scope workspace --format text
-node /absolute/path/to/refactor-scout/dist/cli.js scan --scope package:web --format json --output .tmp/refactor-scout.json
-node /absolute/path/to/refactor-scout/dist/cli.js fix --dry-run
+node /absolute/path/to/wayweft/dist/cli.js scan --scope workspace --format text
+node /absolute/path/to/wayweft/dist/cli.js scan --scope package:web --format json --output .tmp/wayweft.json
+node /absolute/path/to/wayweft/dist/cli.js fix --dry-run
 ```
 
-If you want `refactor-scout` available as a normal shell command, link it globally from this repo:
+If you want `wayweft` available as a normal shell command, link it globally from this repo:
 
 ```bash
 npm link
@@ -55,9 +58,9 @@ Then use it inside any project:
 
 ```bash
 cd /path/to/project
-refactor-scout scan --scope workspace --format text
-refactor-scout skill install
-refactor-scout doctor
+wayweft scan --scope workspace --format text
+wayweft skill install
+wayweft doctor
 ```
 
 ## Install the skill in a target repo
@@ -66,21 +69,21 @@ From the target repository root, install the skill bundle with the built CLI:
 
 ```bash
 cd /path/to/project
-node /absolute/path/to/refactor-scout/dist/cli.js skill install
+node /absolute/path/to/wayweft/dist/cli.js skill install
 ```
 
 If you already linked the package globally with `npm link`, use:
 
 ```bash
 cd /path/to/project
-refactor-scout skill install
+wayweft skill install
 ```
 
 This writes the portable skill bundle and guidance files into the target repo, including:
 
-- `tools/refactor-scout-skill`
-- `.agents/skills/refactor-scout`
-- `.claude/skills/refactor-scout`
+- `tools/wayweft-skill`
+- `.agents/skills/wayweft`
+- `.claude/skills/wayweft`
 - `AGENTS.md`
 - `CLAUDE.md`
 

@@ -5,12 +5,12 @@ import ts from "typescript";
 import { z } from "zod";
 import type {
   NormalizedConfig,
-  RefactorScoutConfig,
+  WayweftConfig,
   RuleConfigMap,
   RuleThresholds,
 } from "./types.js";
 
-const configSchema: z.ZodType<RefactorScoutConfig> = z.object({
+const configSchema: z.ZodType<WayweftConfig> = z.object({
   workspace: z
     .object({
       rootMarkers: z.array(z.string()).optional(),
@@ -53,20 +53,16 @@ const defaultRules: Record<string, NormalizedConfig["rules"][string]> = {
   "boundary-violation": { enabled: true, maxLines: 45, maxDepth: 3, maxParams: 4 },
 } satisfies NormalizedConfig["rules"];
 
-export function defineConfig(config: RefactorScoutConfig): RefactorScoutConfig {
+export function defineConfig(config: WayweftConfig): WayweftConfig {
   return config;
 }
 
 export async function loadConfig(cwd: string): Promise<NormalizedConfig> {
-  const configPath = [
-    "refactor-scout.config.ts",
-    "refactor-scout.config.js",
-    "refactor-scout.config.json",
-  ]
+  const configPath = ["wayweft.config.ts", "wayweft.config.js", "wayweft.config.json"]
     .map((candidate) => path.join(cwd, candidate))
     .find((candidate) => existsSync(candidate));
 
-  let loaded: RefactorScoutConfig = {};
+  let loaded: WayweftConfig = {};
   if (configPath) {
     if (configPath.endsWith(".json")) {
       loaded = configSchema.parse(
@@ -82,12 +78,10 @@ export async function loadConfig(cwd: string): Promise<NormalizedConfig> {
         fileName: configPath,
       });
       const moduleUrl = `data:text/javascript;base64,${Buffer.from(transpiled.outputText).toString("base64")}`;
-      const module = (await import(moduleUrl)) as { default?: RefactorScoutConfig };
+      const module = (await import(moduleUrl)) as { default?: WayweftConfig };
       loaded = configSchema.parse(module.default ?? {});
     } else {
-      const module = (await import(pathToFileURL(configPath).href)) as {
-        default?: RefactorScoutConfig;
-      };
+      const module = (await import(pathToFileURL(configPath).href)) as { default?: WayweftConfig };
       loaded = configSchema.parse(module.default ?? {});
     }
   }
@@ -112,7 +106,7 @@ function mergeRules(rules?: RuleConfigMap): NormalizedConfig["rules"] {
   return merged;
 }
 
-export function normalizeConfig(config: RefactorScoutConfig): NormalizedConfig {
+export function normalizeConfig(config: WayweftConfig): NormalizedConfig {
   return {
     workspace: {
       rootMarkers: config.workspace?.rootMarkers ?? [
@@ -134,7 +128,7 @@ export function normalizeConfig(config: RefactorScoutConfig): NormalizedConfig {
       minScore: config.analysis?.minScore ?? 25,
       changedOnlyDefault: config.analysis?.changedOnlyDefault ?? false,
       includeGitChurn: config.analysis?.includeGitChurn ?? true,
-      baselineFile: config.analysis?.baselineFile ?? ".refactor-scout-baseline.json",
+      baselineFile: config.analysis?.baselineFile ?? ".wayweft-baseline.json",
     },
     rules: mergeRules(config.rules),
     ignore: config.ignore ?? [

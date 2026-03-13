@@ -45,7 +45,7 @@ describe("scanWorkspace", () => {
   });
 
   it("installs portable skill bundles and guidance files", () => {
-    const rootDir = mkdtempSync(path.join(tmpdir(), "refactor-scout-"));
+    const rootDir = mkdtempSync(path.join(tmpdir(), "wayweft-"));
     tempDirs.push(rootDir);
 
     const written = installSkillBundles({
@@ -55,7 +55,7 @@ describe("scanWorkspace", () => {
 
     expect(written.some((entry) => entry.endsWith("/AGENTS.md"))).toBe(true);
     expect(written.some((entry) => entry.endsWith("/CLAUDE.md"))).toBe(true);
-    expect(written.some((entry) => entry.includes(".agents/skills/refactor-scout"))).toBe(true);
-    expect(written.some((entry) => entry.includes(".claude/skills/refactor-scout"))).toBe(true);
+    expect(written.some((entry) => entry.includes(".agents/skills/wayweft"))).toBe(true);
+    expect(written.some((entry) => entry.includes(".claude/skills/wayweft"))).toBe(true);
   });
 });

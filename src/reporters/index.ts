@@ -4,7 +4,7 @@ import type { Finding, ScanResult } from "../types.js";
 
 export function formatTextReport(result: ScanResult): string {
   const lines = [
-    pc.bold(`Refactor Scout: ${result.summary.findingCount} findings`),
+    pc.bold(`Wayweft: ${result.summary.findingCount} findings`),
     `Errors: ${result.summary.bySeverity.error}  Warnings: ${result.summary.bySeverity.warning}  Info: ${result.summary.bySeverity.info}`,
     "",
   ];
@@ -43,7 +43,7 @@ export function formatMarkdownReport(result: ScanResult): string {
     .join("\n");
 
   return [
-    "# Refactor Scout Report",
+    "# Wayweft Report",
     "",
     `- Findings: ${result.summary.findingCount}`,
     `- Errors: ${result.summary.bySeverity.error}`,
@@ -75,7 +75,7 @@ export function formatSarifReport(result: ScanResult): string {
         {
           tool: {
             driver: {
-              name: "refactor-scout",
+              name: "wayweft",
               rules: uniqueRules(result.findings).map((ruleId) => ({
                 id: ruleId,
                 shortDescription: {

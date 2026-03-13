@@ -6,7 +6,7 @@
 - Treat internal package boundaries as first-class analysis signals.
 
 ## Validation
-- Run `refactor-scout scan` before and after code changes.
+- Run `wayweft scan` before and after code changes.
 - Apply only safe fixes by default.
 - Validate touched packages with local lint/tests after edits.
 

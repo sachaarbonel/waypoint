@@ -5,11 +5,11 @@
 - Lint: `npm run lint`
 - Test: `npm run test`
 
-## Refactor Scout workflow
-- Workspace scan: `refactor-scout scan --scope workspace --format text`
-- Package scan: `refactor-scout scan --scope package:<name> --format json`
-- Changed scope scan: `refactor-scout scan --scope changed --since origin/main --format sarif`
-- Safe fixes: `refactor-scout fix --dry-run`
+## Wayweft workflow
+- Workspace scan: `wayweft scan --scope workspace --format text`
+- Package scan: `wayweft scan --scope package:<name> --format json`
+- Changed scope scan: `wayweft scan --scope changed --since origin/main --format sarif`
+- Safe fixes: `wayweft fix --dry-run`
 
 ## Guidance
 - Prefer package-local scans when working inside a monorepo package.
