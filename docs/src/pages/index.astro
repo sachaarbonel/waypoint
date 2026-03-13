@@ -7,400 +7,1094 @@ import "../styles/brand.css";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wayweft</title>
+    <title>Wayweft — Codebase intelligence for AI-assisted development</title>
     <meta
       name="description"
-      content="Wayweft is a codebase intelligence layer for AI-assisted development."
+      content="Wayweft is a codebase intelligence layer for AI-assisted development. Review changes, detect drift, preserve context, carry knowledge forward."
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
-  <body class="landing-shell">
-    <div class="landing-bg" aria-hidden="true">
-      <span class="trace trace-a"></span>
-      <span class="trace trace-b"></span>
-      <span class="trace trace-c"></span>
+  <body class="landing">
+    <!-- Background woven traces -->
+    <div class="woven-bg" aria-hidden="true">
+      <svg class="woven-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="trace-grad-1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="transparent" />
+            <stop offset="20%" stop-color="#588184" stop-opacity="0.4" />
+            <stop offset="50%" stop-color="#b59461" stop-opacity="0.35" />
+            <stop offset="80%" stop-color="#588184" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="transparent" />
+          </linearGradient>
+          <linearGradient id="trace-grad-2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="transparent" />
+            <stop offset="30%" stop-color="#b59461" stop-opacity="0.3" />
+            <stop offset="60%" stop-color="#588184" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="transparent" />
+          </linearGradient>
+        </defs>
+        <!-- Woven thread paths -->
+        <path d="M-100 180 Q 200 160, 400 200 T 800 170 T 1200 210 T 1540 180" stroke="url(#trace-grad-1)" stroke-width="1" fill="none" class="thread thread-1" />
+        <path d="M-50 240 Q 300 220, 500 260 T 900 230 T 1300 270 T 1540 240" stroke="url(#trace-grad-2)" stroke-width="1" fill="none" class="thread thread-2" />
+        <path d="M-100 620 Q 250 600, 500 640 T 950 610 T 1540 650" stroke="url(#trace-grad-1)" stroke-width="1" fill="none" class="thread thread-3" />
+        <path d="M-50 700 Q 350 680, 600 720 T 1000 690 T 1540 710" stroke="url(#trace-grad-2)" stroke-width="0.8" fill="none" class="thread thread-4" />
+        <!-- Signal nodes -->
+        <circle cx="400" cy="200" r="3" fill="#b59461" opacity="0" class="node node-1" />
+        <circle cx="800" cy="170" r="2.5" fill="#588184" opacity="0" class="node node-2" />
+        <circle cx="500" cy="640" r="3" fill="#b59461" opacity="0" class="node node-3" />
+        <circle cx="950" cy="610" r="2.5" fill="#588184" opacity="0" class="node node-4" />
+      </svg>
     </div>
 
-    <header class="landing-header">
-      <a href="/" class="brand-lockup">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 48 48" role="img" focusable="false">
-            <path d="M6 12c4 0 6 2 8 8l4 12c1.2 3.6 2.7 4 6 4 2.8 0 4.2-.9 5.4-4.7L36 12c1.5 5 3 10 4.4 15 1 3.4 2 5.2 4.6 5.2" />
-            <path d="M6 36c4 0 5.5-1.7 6.7-5.3L18 12c1.4 4.5 2.8 9.1 4.3 13.7 1.3 4.1 2.7 6.3 5.7 6.3 2.7 0 4.1-1.8 5.2-5.8L38 12c1.3 3.7 2.3 6.1 4 7.8" />
-          </svg>
-        </span>
-        <span class="brand-wordmark">Wayweft</span>
-      </a>
-      <nav class="landing-nav">
-        <a href="/docs/">Docs</a>
-        <a href="/docs/getting-started/">Getting Started</a>
-        <a href="https://github.com/sachaarbonel/wayweft">GitHub</a>
-      </nav>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="/" class="logo-lockup">
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" role="img" focusable="false">
+              <path d="M6 12c4 0 6 2 8 8l4 12c1.2 3.6 2.7 4 6 4 2.8 0 4.2-.9 5.4-4.7L36 12c1.5 5 3 10 4.4 15 1 3.4 2 5.2 4.6 5.2" />
+              <path d="M6 36c4 0 5.5-1.7 6.7-5.3L18 12c1.4 4.5 2.8 9.1 4.3 13.7 1.3 4.1 2.7 6.3 5.7 6.3 2.7 0 4.1-1.8 5.2-5.8L38 12c1.3 3.7 2.3 6.1 4 7.8" />
+            </svg>
+          </span>
+          <span class="logo-word">Wayweft</span>
+        </a>
+        <nav class="site-nav">
+          <a href="/docs/">Docs</a>
+          <a href="/docs/getting-started/">Get Started</a>
+          <a href="https://github.com/sachaarbonel/wayweft" class="nav-github">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            <span>GitHub</span>
+          </a>
+        </nav>
+      </div>
     </header>
 
-    <main class="landing-main">
-      <section class="hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">Woven signal</p>
-          <h1>Codebase intelligence for AI-assisted development.</h1>
-          <p class="hero-body">
-            Wayweft helps teams review changes after a Claude or Codex session,
-            detect duplication and refactor drift, preserve codebase context,
-            and carry knowledge forward across sessions.
-          </p>
-          <div class="hero-actions">
-            <a class="primary-action" href="/docs/">Read the docs</a>
-            <a class="secondary-action" href="/docs/getting-started/">Start here</a>
-          </div>
-        </div>
-
-        <div class="hero-panel">
-          <div class="panel-traces" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div class="panel-copy">
-            <p class="panel-label">Positioning</p>
-            <h2>Post-session review with durable continuity.</h2>
-            <p>
-              Built for serious engineering teams that need validation
-              guidance, cleanup workflows, and codebase memory without turning
-              the stack into a generic AI platform.
+    <main>
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-inner">
+          <div class="hero-content">
+            <p class="kicker">Codebase intelligence</p>
+            <h1>
+              <span class="hero-line hero-line-1">Carry signal</span>
+              <span class="hero-line hero-line-2">forward.</span>
+            </h1>
+            <p class="hero-sub">
+              Wayweft helps engineering teams review changes after AI coding sessions, detect
+              duplication and refactor drift, preserve codebase context, and carry knowledge
+              forward across sessions.
             </p>
+            <div class="hero-cta">
+              <a href="/docs/getting-started/" class="btn btn-primary">
+                Get started
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+              </a>
+              <a href="/docs/" class="btn btn-ghost">Read the docs</a>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="signal-viz">
+              <div class="viz-lines" aria-hidden="true">
+                <span class="viz-line vl-1"></span>
+                <span class="viz-line vl-2"></span>
+                <span class="viz-line vl-3"></span>
+                <span class="viz-line vl-4"></span>
+                <span class="viz-line vl-5"></span>
+              </div>
+              <div class="viz-label">
+                <span class="viz-tag">woven signal</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="feature-grid">
-        <article>
-          <p class="feature-kicker">Review</p>
-          <h3>Changed-scope analysis</h3>
-          <p>Scan the workspace, a package, or changed files to surface structural drift before it spreads.</p>
-        </article>
-        <article>
-          <p class="feature-kicker">Continuity</p>
-          <h3>Codebase memory</h3>
-          <p>Carry guidance and review context across sessions with portable skills and repo-level workflow docs.</p>
-        </article>
-        <article>
-          <p class="feature-kicker">Cleanup</p>
-          <h3>Safe fixes first</h3>
-          <p>Preview low-risk rewrites with dry-run workflows before touching the target repository.</p>
-        </article>
+      <!-- Divider trace -->
+      <div class="section-trace" aria-hidden="true">
+        <span></span>
+      </div>
+
+      <!-- Value proposition -->
+      <section class="value-section">
+        <div class="value-inner">
+          <div class="value-header">
+            <p class="kicker">What Wayweft does</p>
+            <h2>Post-session review<br />with durable continuity.</h2>
+          </div>
+          <div class="value-grid">
+            <article class="value-card">
+              <div class="card-icon">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <path d="M6 8h20M6 16h14M6 24h18" />
+                  <circle cx="26" cy="16" r="4" stroke-width="1.5" />
+                  <path d="M24.5 17.5l1.5 1.5" />
+                </svg>
+              </div>
+              <h3>Review</h3>
+              <p class="card-label">Changed-scope analysis</p>
+              <p>Scan the workspace, a package, or changed files to surface structural drift before it compounds into debt.</p>
+            </article>
+            <article class="value-card">
+              <div class="card-icon">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <path d="M8 8v16M16 6v20M24 10v12" />
+                  <path d="M8 16h16" stroke-dasharray="2 3" />
+                </svg>
+              </div>
+              <h3>Continuity</h3>
+              <p class="card-label">Codebase memory</p>
+              <p>Carry guidance and review context across sessions with portable skills and repo-level workflow documentation.</p>
+            </article>
+            <article class="value-card">
+              <div class="card-icon">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <rect x="7" y="7" width="18" height="18" rx="3" />
+                  <path d="M12 16l3 3 5-6" />
+                </svg>
+              </div>
+              <h3>Cleanup</h3>
+              <p class="card-label">Safe fixes first</p>
+              <p>Preview low-risk rewrites with dry-run workflows before touching the target repository. No surprises.</p>
+            </article>
+          </div>
+        </div>
       </section>
 
-      <section class="command-band">
-        <div>
-          <p class="feature-kicker">CLI</p>
-          <h3>Start with one command.</h3>
+      <!-- CLI band -->
+      <section class="cli-section">
+        <div class="cli-inner">
+          <div class="cli-copy">
+            <p class="kicker">CLI</p>
+            <h2>One command to start.</h2>
+            <p>Wayweft ships as a TypeScript CLI. Scan a workspace, review a package, or generate a report in seconds.</p>
+          </div>
+          <div class="cli-demo">
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="terminal-dot"></span>
+                <span class="terminal-dot"></span>
+                <span class="terminal-dot"></span>
+                <span class="terminal-title">terminal</span>
+              </div>
+              <div class="terminal-body">
+                <code><span class="t-prompt">$</span> wayweft scan --scope workspace</code>
+                <code class="t-output"></code>
+                <code class="t-output"><span class="t-muted">scanning 4 packages...</span></code>
+                <code class="t-output"></code>
+                <code class="t-output"><span class="t-teal">review</span>  3 structural findings</code>
+                <code class="t-output"><span class="t-brass">fix</span>     2 safe rewrites available</code>
+                <code class="t-output"><span class="t-muted">continuity</span>  skill bundle up to date</code>
+                <code class="t-output"></code>
+                <code class="t-output"><span class="t-prompt">$</span> wayweft fix --dry-run</code>
+                <code class="t-output"><span class="t-muted">previewing 2 safe rewrites...</span></code>
+              </div>
+            </div>
+          </div>
         </div>
-        <pre><code>wayweft scan --scope workspace --format text</code></pre>
       </section>
+
+      <!-- Positioning band -->
+      <section class="positioning-section">
+        <div class="positioning-inner">
+          <div class="positioning-traces" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="positioning-content">
+            <p class="kicker">Positioning</p>
+            <h2>Built for serious engineering teams.</h2>
+            <p>
+              Wayweft is not a generic AI coding platform, not a linting tool, and not a security scanner.
+              It is a codebase intelligence layer: validation guidance, cleanup workflows, and durable
+              codebase memory that travels with your repo.
+            </p>
+            <div class="positioning-tags">
+              <span>Post-session review</span>
+              <span>Codebase memory</span>
+              <span>Validation guidance</span>
+              <span>Handoff continuity</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <span class="logo-mark logo-mark-sm" aria-hidden="true">
+              <svg viewBox="0 0 48 48" role="img" focusable="false">
+                <path d="M6 12c4 0 6 2 8 8l4 12c1.2 3.6 2.7 4 6 4 2.8 0 4.2-.9 5.4-4.7L36 12c1.5 5 3 10 4.4 15 1 3.4 2 5.2 4.6 5.2" />
+                <path d="M6 36c4 0 5.5-1.7 6.7-5.3L18 12c1.4 4.5 2.8 9.1 4.3 13.7 1.3 4.1 2.7 6.3 5.7 6.3 2.7 0 4.1-1.8 5.2-5.8L38 12c1.3 3.7 2.3 6.1 4 7.8" />
+              </svg>
+            </span>
+            <p class="footer-tagline">Codebase intelligence for AI-assisted development.</p>
+          </div>
+          <nav class="footer-nav">
+            <div class="footer-col">
+              <p class="footer-heading">Product</p>
+              <a href="/docs/">Documentation</a>
+              <a href="/docs/getting-started/">Getting Started</a>
+              <a href="/docs/cli/scan/">CLI Reference</a>
+            </div>
+            <div class="footer-col">
+              <p class="footer-heading">Project</p>
+              <a href="/docs/roadmap/">Roadmap</a>
+              <a href="/docs/changelog/">Changelog</a>
+              <a href="https://github.com/sachaarbonel/wayweft">GitHub</a>
+            </div>
+          </nav>
+        </div>
+        <div class="footer-bottom">
+          <p>Wayweft</p>
+        </div>
+      </footer>
     </main>
   </body>
 </html>
 
 <style>
+  /* ===== Reset & Base ===== */
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
   :global(:root) {
     color-scheme: light;
   }
 
-  .landing-shell {
+  .landing {
     min-height: 100vh;
-    margin: 0;
     color: var(--wayweft-ink);
+    font-family: var(--wayweft-font-body);
     background:
-      radial-gradient(circle at top left, rgba(181, 148, 97, 0.12), transparent 26%),
-      radial-gradient(circle at top right, rgba(88, 129, 132, 0.14), transparent 34%),
-      linear-gradient(180deg, #f7f1e7 0%, #f1e7d8 100%);
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(88, 129, 132, 0.1), transparent),
+      radial-gradient(ellipse 60% 40% at 85% 10%, rgba(181, 148, 97, 0.08), transparent),
+      linear-gradient(180deg, #f7f1e7 0%, #f3ebdc 40%, #ede4d4 100%);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 
-  .landing-bg {
+  /* ===== Woven background threads ===== */
+  .woven-bg {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    overflow: hidden;
+    z-index: 0;
   }
 
-  .trace {
-    position: absolute;
-    display: block;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(88, 129, 132, 0.55), rgba(181, 148, 97, 0.6), transparent);
+  .woven-svg {
+    width: 100%;
+    height: 100%;
   }
 
-  .trace-a {
-    top: 19%;
-    left: -6%;
-    width: 48%;
-    transform: rotate(8deg);
+  .thread {
+    stroke-dasharray: 1200;
+    stroke-dashoffset: 1200;
+    animation: thread-draw 3s ease-out forwards;
   }
 
-  .trace-b {
-    top: 43%;
-    right: -10%;
-    width: 52%;
-    transform: rotate(-12deg);
+  .thread-1 { animation-delay: 0.2s; }
+  .thread-2 { animation-delay: 0.6s; }
+  .thread-3 { animation-delay: 1s; }
+  .thread-4 { animation-delay: 1.3s; }
+
+  @keyframes thread-draw {
+    to { stroke-dashoffset: 0; }
   }
 
-  .trace-c {
-    bottom: 16%;
-    left: 12%;
-    width: 38%;
+  .node {
+    animation: node-appear 0.6s ease-out forwards;
   }
 
-  .landing-header,
-  .landing-main {
-    position: relative;
-    z-index: 1;
-    width: min(1120px, calc(100% - 2rem));
-    margin: 0 auto;
+  .node-1 { animation-delay: 1.4s; }
+  .node-2 { animation-delay: 1.8s; }
+  .node-3 { animation-delay: 2.2s; }
+  .node-4 { animation-delay: 2.5s; }
+
+  @keyframes node-appear {
+    0% { opacity: 0; r: 0; }
+    50% { opacity: 0.7; }
+    100% { opacity: 0.5; r: 3; }
   }
 
-  .landing-header {
+  /* ===== Header ===== */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid rgba(26, 31, 53, 0.06);
+    background: rgba(243, 235, 220, 0.72);
+  }
+
+  .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 1.25rem 0;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.9rem 2rem;
   }
 
-  .brand-lockup {
+  .logo-lockup {
     display: inline-flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.75rem;
     color: inherit;
     text-decoration: none;
   }
 
-  .brand-mark {
+  .logo-mark {
     display: inline-flex;
-    width: 2.6rem;
-    height: 2.6rem;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(26, 31, 53, 0.14);
-    border-radius: 0.8rem;
-    background: rgba(243, 235, 220, 0.78);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid rgba(26, 31, 53, 0.1);
+    border-radius: 0.65rem;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.6), rgba(243, 235, 220, 0.8));
+    box-shadow:
+      0 1px 3px rgba(26, 31, 53, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    flex: none;
   }
 
-  .brand-mark svg {
-    width: 1.65rem;
-    height: 1.65rem;
-    stroke: currentColor;
+  .logo-mark svg {
+    width: 1.55rem;
+    height: 1.55rem;
+    stroke: var(--wayweft-ink);
     stroke-width: 2.4;
     fill: none;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
 
-  .brand-wordmark {
+  .logo-word {
     font-family: var(--wayweft-font-heading);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 560;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
   }
 
-  .landing-nav {
+  .site-nav {
     display: flex;
-    gap: 1.25rem;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
   }
 
-  .landing-nav a {
+  .site-nav a {
     color: var(--wayweft-ink);
     text-decoration: none;
+    font-size: 0.92rem;
     font-weight: 600;
+    opacity: 0.7;
+    transition: opacity 0.2s;
   }
 
-  .landing-main {
-    padding: 3.5rem 0 4rem;
+  .site-nav a:hover {
+    opacity: 1;
   }
 
-  .hero-grid {
-    display: grid;
-    gap: 2rem;
-    align-items: center;
-  }
-
-  .eyebrow,
-  .feature-kicker,
-  .panel-label {
-    margin: 0 0 0.7rem;
-    color: var(--wayweft-brass);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-weight: 700;
-    font-size: 0.8rem;
-  }
-
-  h1,
-  h2,
-  h3 {
-    margin: 0;
-  }
-
-  .hero-copy h1 {
-    max-width: 11ch;
-    font-size: clamp(3rem, 8vw, 5.8rem);
-    line-height: 0.96;
-  }
-
-  .hero-body,
-  .panel-copy p,
-  .feature-grid p {
-    max-width: 42rem;
-    font-size: 1.08rem;
-    line-height: 1.7;
-    color: var(--sl-color-gray-1);
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 1.75rem;
-  }
-
-  .hero-actions a {
+  .nav-github {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-height: 3rem;
-    padding: 0 1.15rem;
-    border-radius: 999px;
-    text-decoration: none;
-    font-weight: 700;
+    gap: 0.4rem;
   }
 
-  .primary-action {
+  /* ===== Shared ===== */
+  .kicker {
+    color: var(--wayweft-brass);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    font-size: 0.72rem;
+    margin-bottom: 1rem;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--wayweft-font-heading);
+    font-weight: 560;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--wayweft-ink);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.6rem;
+    font-weight: 700;
+    font-size: 0.92rem;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .btn-primary {
     background: var(--wayweft-ink);
     color: var(--wayweft-paper);
+    box-shadow:
+      0 1px 2px rgba(26, 31, 53, 0.2),
+      0 4px 12px rgba(26, 31, 53, 0.12);
   }
 
-  .secondary-action {
+  .btn-primary:hover {
+    background: #252b47;
+    box-shadow:
+      0 2px 4px rgba(26, 31, 53, 0.2),
+      0 8px 24px rgba(26, 31, 53, 0.16);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
     color: var(--wayweft-ink);
-    border: 1px solid rgba(26, 31, 53, 0.16);
-    background: rgba(243, 235, 220, 0.62);
+    border: 1px solid rgba(26, 31, 53, 0.14);
+    background: rgba(255, 255, 255, 0.4);
   }
 
-  .hero-panel,
-  .command-band,
-  .feature-grid article {
-    border: 1px solid rgba(26, 31, 53, 0.12);
-    background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.14)),
-      rgba(243, 235, 220, 0.72);
-    box-shadow: 0 20px 50px rgba(26, 31, 53, 0.06);
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(26, 31, 53, 0.22);
   }
 
-  .hero-panel {
-    display: grid;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    border-radius: 1.6rem;
-  }
-
-  .panel-traces {
-    display: grid;
-    gap: 0.95rem;
-    min-height: 7rem;
-    align-content: center;
-  }
-
-  .panel-traces span {
-    display: block;
-    height: 1px;
+  /* ===== Hero ===== */
+  .hero {
     position: relative;
-    background: linear-gradient(90deg, transparent, rgba(88, 129, 132, 0.88), rgba(181, 148, 97, 0.88), transparent);
+    z-index: 1;
+    padding: 6rem 2rem 4rem;
   }
 
-  .panel-traces span:nth-child(2) {
-    transform: translateX(1.4rem);
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
-  .panel-traces span:nth-child(3) {
-    transform: translateX(2.6rem);
+  .hero-content {
+    animation: hero-enter 0.8s ease-out both;
   }
 
-  .panel-traces span::after {
+  @keyframes hero-enter {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero h1 {
+    font-size: clamp(3.2rem, 6.5vw, 5.5rem);
+    line-height: 0.92;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-line {
+    display: block;
+  }
+
+  .hero-line-1 {
+    animation: line-reveal 0.7s ease-out 0.2s both;
+  }
+
+  .hero-line-2 {
+    color: var(--wayweft-teal);
+    animation: line-reveal 0.7s ease-out 0.4s both;
+  }
+
+  @keyframes line-reveal {
+    from {
+      opacity: 0;
+      transform: translateX(-12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .hero-sub {
+    max-width: 38rem;
+    font-size: 1.08rem;
+    line-height: 1.7;
+    color: #4a5272;
+    animation: hero-enter 0.8s ease-out 0.5s both;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    animation: hero-enter 0.8s ease-out 0.65s both;
+  }
+
+  /* Hero visual - woven signal panel */
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    animation: hero-enter 1s ease-out 0.3s both;
+  }
+
+  .signal-viz {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 4 / 3;
+    border: 1px solid rgba(26, 31, 53, 0.08);
+    border-radius: 1.5rem;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1)),
+      rgba(243, 235, 220, 0.6);
+    box-shadow:
+      0 1px 2px rgba(26, 31, 53, 0.04),
+      0 8px 32px rgba(26, 31, 53, 0.06),
+      0 32px 64px rgba(26, 31, 53, 0.04);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .viz-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .viz-line {
+    display: block;
+    height: 1.5px;
+    position: relative;
+    border-radius: 1px;
+    transform-origin: left center;
+  }
+
+  .vl-1 {
+    background: linear-gradient(90deg, transparent 2%, #588184 20%, #b59461 65%, transparent 95%);
+    width: 88%;
+    animation: weave-in 1.2s ease-out 0.8s both;
+  }
+
+  .vl-2 {
+    background: linear-gradient(90deg, transparent 5%, #b59461 25%, #588184 70%, transparent 92%);
+    width: 76%;
+    margin-left: 8%;
+    animation: weave-in 1.2s ease-out 1s both;
+  }
+
+  .vl-3 {
+    background: linear-gradient(90deg, transparent 3%, #588184 30%, #b59461 60%, transparent 90%);
+    width: 92%;
+    margin-left: 3%;
+    animation: weave-in 1.2s ease-out 1.2s both;
+  }
+
+  .vl-4 {
+    background: linear-gradient(90deg, transparent 8%, #b59461 35%, #588184 75%, transparent 95%);
+    width: 70%;
+    margin-left: 14%;
+    animation: weave-in 1.2s ease-out 1.4s both;
+  }
+
+  .vl-5 {
+    background: linear-gradient(90deg, transparent 1%, #588184 20%, #b59461 55%, transparent 88%);
+    width: 84%;
+    margin-left: 5%;
+    animation: weave-in 1.2s ease-out 1.6s both;
+  }
+
+  /* Signal dots on the lines */
+  .vl-1::after,
+  .vl-3::after,
+  .vl-5::after {
     content: "";
     position: absolute;
-    right: 18%;
     top: 50%;
-    width: 0.6rem;
-    height: 0.6rem;
     transform: translateY(-50%);
-    border-radius: 999px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
     background: var(--wayweft-brass);
-    box-shadow: 0 0 0 0.25rem rgba(181, 148, 97, 0.12);
+    box-shadow: 0 0 0 3px rgba(181, 148, 97, 0.15);
+    animation: dot-pulse 3s ease-in-out infinite;
   }
 
-  .panel-copy h2 {
-    font-size: clamp(1.8rem, 4vw, 2.7rem);
+  .vl-1::after { right: 15%; animation-delay: 0s; }
+  .vl-3::after { right: 30%; animation-delay: 1s; }
+  .vl-5::after { right: 22%; animation-delay: 2s; }
+
+  @keyframes weave-in {
+    from {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+    to {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 0.5; box-shadow: 0 0 0 3px rgba(181, 148, 97, 0.1); }
+    50% { opacity: 1; box-shadow: 0 0 0 5px rgba(181, 148, 97, 0.2); }
+  }
+
+  .viz-label {
+    display: flex;
+    align-items: center;
+  }
+
+  .viz-tag {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    color: var(--wayweft-teal);
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(88, 129, 132, 0.2);
+    border-radius: 0.4rem;
+    background: rgba(88, 129, 132, 0.06);
+  }
+
+  /* ===== Section trace divider ===== */
+  .section-trace {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .section-trace span {
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(88, 129, 132, 0.35), rgba(181, 148, 97, 0.3), transparent);
+  }
+
+  /* ===== Value section ===== */
+  .value-section {
+    position: relative;
+    z-index: 1;
+    padding: 5rem 2rem;
+  }
+
+  .value-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .value-header {
+    margin-bottom: 3rem;
+    animation: fade-up 0.7s ease-out both;
+  }
+
+  .value-header h2 {
+    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
     line-height: 1.05;
-    max-width: 13ch;
   }
 
-  .feature-grid {
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .value-grid {
     display: grid;
-    gap: 1rem;
-    margin-top: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
   }
 
-  .feature-grid article {
-    padding: 1.35rem;
+  .value-card {
+    padding: 1.75rem;
+    border: 1px solid rgba(26, 31, 53, 0.08);
     border-radius: 1.2rem;
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.12)),
+      rgba(243, 235, 220, 0.55);
+    box-shadow: 0 1px 3px rgba(26, 31, 53, 0.04);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .feature-grid h3 {
-    font-size: 1.5rem;
+  .value-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 4px 12px rgba(26, 31, 53, 0.06),
+      0 20px 48px rgba(26, 31, 53, 0.06);
+    border-color: rgba(88, 129, 132, 0.2);
+  }
+
+  .card-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.6rem;
+    background: rgba(88, 129, 132, 0.08);
+    margin-bottom: 1.25rem;
+    color: var(--wayweft-teal);
+  }
+
+  .value-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .card-label {
+    font-size: 0.82rem;
+    color: var(--wayweft-brass);
+    font-weight: 600;
     margin-bottom: 0.75rem;
   }
 
-  .command-band {
+  .value-card p:last-child {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: #4a5272;
+  }
+
+  /* ===== CLI section ===== */
+  .cli-section {
+    position: relative;
+    z-index: 1;
+    padding: 0 2rem 5rem;
+  }
+
+  .cli-inner {
     display: grid;
-    gap: 1rem;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 3rem;
     align-items: center;
-    margin-top: 2rem;
-    padding: 1.35rem 1.4rem;
-    border-radius: 1.4rem;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
-  .command-band pre {
-    margin: 0;
-    overflow-x: auto;
-    padding: 1rem 1.1rem;
+  .cli-copy h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+  }
+
+  .cli-copy p:last-of-type {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: #4a5272;
+  }
+
+  .terminal {
+    border: 1px solid rgba(26, 31, 53, 0.12);
     border-radius: 1rem;
-    background: #20263e;
-    color: #f7f1e7;
+    overflow: hidden;
+    box-shadow:
+      0 2px 4px rgba(26, 31, 53, 0.06),
+      0 12px 40px rgba(26, 31, 53, 0.08);
   }
 
-  @media (min-width: 860px) {
-    .hero-grid {
-      grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.8fr);
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 0.9rem;
+    background: #1e2338;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .terminal-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .terminal-title {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.05em;
+  }
+
+  .terminal-body {
+    background: #171b2e;
+    padding: 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .terminal-body code {
+    font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #d4cfc2;
+    white-space: pre;
+  }
+
+  .t-prompt { color: var(--wayweft-brass); }
+  .t-teal { color: #7cb8bb; }
+  .t-brass { color: #d4b07a; }
+  .t-muted { color: #6b7394; }
+  .t-output { opacity: 0; animation: term-line 0.3s ease-out forwards; }
+  .t-output:nth-child(2) { animation-delay: 0.5s; }
+  .t-output:nth-child(3) { animation-delay: 0.9s; }
+  .t-output:nth-child(4) { animation-delay: 1.1s; }
+  .t-output:nth-child(5) { animation-delay: 1.5s; }
+  .t-output:nth-child(6) { animation-delay: 1.8s; }
+  .t-output:nth-child(7) { animation-delay: 2.1s; }
+  .t-output:nth-child(8) { animation-delay: 2.5s; }
+  .t-output:nth-child(9) { animation-delay: 2.9s; }
+  .t-output:nth-child(10) { animation-delay: 3.2s; }
+
+  @keyframes term-line {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== Positioning section ===== */
+  .positioning-section {
+    position: relative;
+    z-index: 1;
+    padding: 0 2rem 5rem;
+  }
+
+  .positioning-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 2.5rem;
+    align-items: start;
+    padding: 2.5rem;
+    border: 1px solid rgba(26, 31, 53, 0.08);
+    border-radius: 1.5rem;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.1)),
+      rgba(243, 235, 220, 0.6);
+    box-shadow: 0 1px 3px rgba(26, 31, 53, 0.04);
+  }
+
+  .positioning-traces {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding-top: 0.5rem;
+  }
+
+  .positioning-traces span {
+    display: block;
+    height: 1.5px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, rgba(88, 129, 132, 0.7), rgba(181, 148, 97, 0.6));
+  }
+
+  .positioning-traces span:nth-child(1) { width: 80%; }
+  .positioning-traces span:nth-child(2) { width: 100%; margin-left: 8%; }
+  .positioning-traces span:nth-child(3) { width: 65%; margin-left: 16%; }
+
+  .positioning-content h2 {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .positioning-content > p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #4a5272;
+    max-width: 42rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .positioning-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .positioning-tags span {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.4rem;
+    border: 1px solid rgba(26, 31, 53, 0.1);
+    background: rgba(255, 255, 255, 0.5);
+    color: #4a5272;
+  }
+
+  /* ===== Footer ===== */
+  .site-footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(26, 31, 53, 0.08);
+    background: rgba(237, 226, 208, 0.4);
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem 2rem;
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .logo-mark-sm {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+  }
+
+  .logo-mark-sm svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.9rem;
+    color: #5b647f;
+    max-width: 28rem;
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 4rem;
+  }
+
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .footer-heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--wayweft-brass);
+    margin-bottom: 0.4rem;
+  }
+
+  .footer-col a {
+    font-size: 0.88rem;
+    color: #4a5272;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover {
+    color: var(--wayweft-ink);
+  }
+
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.25rem 2rem;
+    border-top: 1px solid rgba(26, 31, 53, 0.06);
+  }
+
+  .footer-bottom p {
+    font-size: 0.78rem;
+    color: #9d998f;
+    letter-spacing: 0.02em;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 960px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
       gap: 2.5rem;
-      min-height: 64vh;
     }
 
-    .feature-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .hero {
+      padding: 4rem 2rem 3rem;
     }
 
-    .command-band {
-      grid-template-columns: 0.9fr 1.1fr;
+    .hero h1 {
+      font-size: clamp(2.8rem, 8vw, 4.5rem);
+    }
+
+    .value-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .cli-inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .positioning-inner {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .positioning-traces {
+      flex-direction: row;
+      height: auto;
+      gap: 0;
+    }
+
+    .positioning-traces span {
+      height: auto;
+      width: 1.5px !important;
+      margin-left: 0 !important;
+      min-height: 2rem;
+    }
+
+    .footer-inner {
+      grid-template-columns: 1fr;
     }
   }
 
-  @media (max-width: 699px) {
-    .landing-header {
-      align-items: flex-start;
-      flex-direction: column;
+  @media (max-width: 600px) {
+    .header-inner {
+      padding: 0.75rem 1.25rem;
     }
 
-    .landing-main {
-      padding-top: 2rem;
+    .site-nav span {
+      display: none;
+    }
+
+    .hero {
+      padding: 3rem 1.25rem 2rem;
+    }
+
+    .value-section,
+    .cli-section,
+    .positioning-section {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    .positioning-inner {
+      padding: 1.5rem;
+    }
+
+    .footer-nav {
+      gap: 2.5rem;
     }
   }
 </style>

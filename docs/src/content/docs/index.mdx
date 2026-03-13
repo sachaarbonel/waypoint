@@ -9,7 +9,7 @@ hero:
     - text: Get Started
       link: /docs/getting-started/
       variant: primary
-    - text: CLI scan
+    - text: CLI Reference
       link: /docs/cli/scan/
       variant: secondary
 ---
@@ -27,7 +27,7 @@ Wayweft is a TypeScript-first codebase intelligence layer for AI-assisted develo
     <div>
       <h2>Continuity across sessions, agents, and code changes</h2>
       <p>
-        Wayweft is built for serious engineering teams that need post-session
+        Built for serious engineering teams that need post-session
         review, codebase memory, and validation guidance without turning the
         toolchain into another noisy platform.
       </p>
@@ -37,14 +37,18 @@ Wayweft is a TypeScript-first codebase intelligence layer for AI-assisted develo
 
 ## What you get today
 
-- A CLI for scanning a workspace or package scope
-- Multiple report formats, including SARIF
-- Safe-fix scaffolding for low-risk cleanup passes
-- Skill bundles for Codex and Claude workflows
+- **CLI scanning** — analyze a workspace or package scope for structural drift
+- **Multiple report formats** — text, JSON, and SARIF output
+- **Safe-fix scaffolding** — low-risk cleanup passes with dry-run previews
+- **Skill bundles** — portable workflows for Codex and Claude sessions
 
 ## How to use this site
 
-- Start with [Getting Started](/docs/getting-started/) for local setup and first-run commands.
-- Use the CLI reference pages for focused command usage.
-- Check [Configuration](/docs/config/) and [CI](/docs/ci/) when wiring Wayweft into a larger repo workflow.
-- Track planned work in [Roadmap](/docs/roadmap/).
+| Section | What you'll find |
+|---------|-----------------|
+| [Getting Started](/docs/getting-started/) | Local setup, first-run commands, and workflow overview |
+| [Configuration](/docs/config/) | Config options and repo-level customization |
+| [CLI Reference](/docs/cli/scan/) | Detailed command usage for `scan`, `fix`, and `skill install` |
+| [CI](/docs/ci/) | Wiring Wayweft into CI pipelines and docs hosting |
+| [Roadmap](/docs/roadmap/) | Planned work and future direction |
+| [Changelog](/docs/changelog/) | Dated release notes |
