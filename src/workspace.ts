@@ -1,8 +1,8 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import fg from "fast-glob";
+import ignore, { type Ignore } from "ignore";
 import yaml from "js-yaml";
-import { minimatch } from "minimatch";
 import type { NormalizedConfig, ScanTarget, Workspace, WorkspacePackage } from "./types";
 import { getChangedFiles } from "./utils/git";
 import { normalizePath } from "./utils/fs";
@@ -12,6 +12,14 @@ interface PackageManifest {
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
 }
+
+interface IgnoreMatcher {
+  baseDir: string;
+  matcher: Ignore;
+}
+
+const sourceExtensions = new Set([".ts", ".tsx", ".js", ".jsx"]);
+const ignoreFileNames = [".gitignore", ".ignore"];
 
 export async function discoverWorkspace(
   cwd: string,
@@ -38,20 +46,7 @@ export async function discoverWorkspace(
     }
   }
 
-  const fileInventory = await fg(
-    scopedPackages.length > 0
-      ? scopedPackages.map((pkg) => {
-          const relative = normalizePath(path.relative(rootDir, pkg.dir));
-          return relative ? `${relative}/**/*.{ts,tsx,js,jsx}` : "**/*.{ts,tsx,js,jsx}";
-        })
-      : ["**/*.{ts,tsx,js,jsx}"],
-    {
-      cwd: rootDir,
-      absolute: true,
-      ignore: config.ignore,
-      dot: false,
-    },
-  );
+  const fileInventory = collectSourceFiles(rootDir, scopedPackages, config.ignore);
 
   return {
     rootDir,
@@ -195,5 +190,127 @@ function filterPackages(
 
 export function matchesIgnore(filePath: string, rootDir: string, ignore: string[]): boolean {
   const relative = normalizePath(path.relative(rootDir, filePath));
-  return ignore.some((pattern) => minimatch(relative, pattern));
+  return buildIgnoreMatcher("", ignore).matcher.test(relative).ignored;
+}
+
+function collectSourceFiles(
+  rootDir: string,
+  scopedPackages: WorkspacePackage[],
+  configuredIgnore: string[],
+): string[] {
+  const scanRoots = getScanRoots(rootDir, scopedPackages);
+  const rootMatchers = [buildIgnoreMatcher("", configuredIgnore)];
+  const files = new Set<string>();
+
+  for (const scanRoot of scanRoots) {
+    walkDir(rootDir, scanRoot, rootMatchers, files);
+  }
+
+  return [...files].sort();
+}
+
+function getScanRoots(rootDir: string, scopedPackages: WorkspacePackage[]): string[] {
+  const directories = scopedPackages.length > 0
+    ? [...new Set(scopedPackages.map((pkg) => path.resolve(pkg.dir)))]
+    : [path.resolve(rootDir)];
+
+  return directories
+    .sort((left, right) => left.length - right.length)
+    .filter((dir, index, all) =>
+      !all.slice(0, index).some((candidate) => dir === candidate || dir.startsWith(`${candidate}${path.sep}`)),
+    );
+}
+
+function walkDir(
+  rootDir: string,
+  dirPath: string,
+  activeMatchers: IgnoreMatcher[],
+  files: Set<string>,
+) {
+  const matchers = [...activeMatchers, ...loadIgnoreMatchers(rootDir, dirPath)];
+  const entries = readdirSync(dirPath, { withFileTypes: true })
+    .filter((entry) => !ignoreFileNames.includes(entry.name))
+    .sort((left, right) => left.name.localeCompare(right.name));
+
+  for (const entry of entries) {
+    const entryPath = path.join(dirPath, entry.name);
+    const relativePath = normalizePath(path.relative(rootDir, entryPath));
+    if (isIgnored(relativePath, entry.isDirectory(), matchers)) {
+      continue;
+    }
+    if (entry.isDirectory()) {
+      walkDir(rootDir, entryPath, matchers, files);
+      continue;
+    }
+    if (entry.isFile() && sourceExtensions.has(path.extname(entry.name))) {
+      files.add(path.resolve(entryPath));
+    }
+  }
+}
+
+function loadIgnoreMatchers(rootDir: string, dirPath: string): IgnoreMatcher[] {
+  const baseDir = normalizePath(path.relative(rootDir, dirPath));
+  const matchers: IgnoreMatcher[] = [];
+
+  for (const fileName of ignoreFileNames) {
+    const ignorePath = path.join(dirPath, fileName);
+    if (!existsSync(ignorePath)) {
+      continue;
+    }
+
+    const contents = readFileSync(ignorePath, "utf8");
+    if (!contents.trim()) {
+      continue;
+    }
+
+    matchers.push(buildIgnoreMatcher(baseDir, contents));
+  }
+
+  return matchers;
+}
+
+function buildIgnoreMatcher(baseDir: string, patterns: string[] | string): IgnoreMatcher {
+  return {
+    baseDir,
+    matcher: ignore({ allowRelativePaths: true }).add(patterns),
+  };
+}
+
+function isIgnored(relativePath: string, isDirectory: boolean, matchers: IgnoreMatcher[]): boolean {
+  let ignored = false;
+
+  for (const matcher of matchers) {
+    const candidate = getMatcherCandidate(relativePath, matcher.baseDir, isDirectory);
+    if (!candidate) {
+      continue;
+    }
+
+    const result = matcher.matcher.test(candidate);
+    if (result.ignored) {
+      ignored = true;
+    }
+    if (result.unignored) {
+      ignored = false;
+    }
+  }
+
+  return ignored;
+}
+
+function getMatcherCandidate(relativePath: string, baseDir: string, isDirectory: boolean): string | undefined {
+  if (!baseDir) {
+    return isDirectory ? `${relativePath}/` : relativePath;
+  }
+
+  const prefix = `${baseDir}/`;
+  if (relativePath !== baseDir && !relativePath.startsWith(prefix)) {
+    return undefined;
+  }
+
+  const candidate = relativePath === baseDir ? "" : relativePath.slice(prefix.length);
+  if (!candidate) {
+    return undefined;
+  }
+
+  return isDirectory ? `${candidate}/` : candidate;
 }

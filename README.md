@@ -78,7 +78,9 @@ Tsconfig files: 2
 Files in scan inventory: 84
 Ignore patterns (from config):
   - **/dist/**
+  - **/build/**
   - **/coverage/**
+  - **/*.min.js**
 Skill bundles:
   - root bundle files: 3/3 installed
   - package-local bundles: 2/3 packages
@@ -108,6 +110,31 @@ This writes the portable skill bundle and guidance files into the target repo, i
 - `CLAUDE.md`
 
 For monorepos, it also writes package-local copies under each discovered workspace package.
+
+## Default ignore behavior
+
+Wayweft skips obvious generated and vendored files by default so scans stay focused on code you would realistically review or refactor by hand. The built-in patterns cover:
+
+- generated output folders such as `dist`, `build`, and `.next`
+- coverage reports and Jest snapshots
+- generated source files matching `*.generated.*`
+- vendored assets such as `vendor/`, `vendors/`, and `*.min.js`
+- dependency and support directories such as `node_modules`, `fixtures`, and `migrations`
+
+Wayweft also respects repo ignore files during traversal:
+
+- root and nested `.gitignore`
+- root and nested `.ignore`
+
+You can override the defaults completely with `ignore: []` in `wayweft.config.*`, or extend them in TypeScript config files:
+
+```ts
+import { defaultIgnorePatterns, defineConfig } from "wayweft";
+
+export default defineConfig({
+  ignore: [...defaultIgnorePatterns, "**/custom-generated/**"],
+});
+```
 
 ## Documentation site
 

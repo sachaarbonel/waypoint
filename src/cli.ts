@@ -6,7 +6,7 @@ import { formatJsonReport, formatMarkdownReport, formatSarifReport, formatTextRe
 import { applySafeFixes } from "./fixes/index";
 import { installSkillBundles } from "./skills/index";
 import { scanWorkspace } from "./analyzer/index";
-import { loadConfig } from "./config";
+import { defaultIgnorePatterns, loadConfig } from "./config";
 import { discoverWorkspace } from "./workspace";
 import { normalizePath } from "./utils/fs";
 
@@ -328,7 +328,7 @@ function runInit(cwd: string): string {
   if (!existsSync(configPath)) {
     writeFileSync(
       configPath,
-      `import { defineConfig } from "wayweft";
+      `import { defaultIgnorePatterns, defineConfig } from "wayweft";
 
 export default defineConfig({
   workspace: {
@@ -347,7 +347,7 @@ export default defineConfig({
     "boolean-param": { enabled: true },
     "cross-package-duplication": { enabled: true },
   },
-  ignore: ["**/dist/**", "**/coverage/**", "**/*.generated.*", "**/__snapshots__/**"],
+  ignore: [...defaultIgnorePatterns],
 });
 `,
       "utf8",

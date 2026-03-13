@@ -27,8 +27,10 @@ Tsconfig files: 2
 Files in scan inventory: 84
 Ignore patterns (from config):
   - **/dist/**
+  - **/build/**
   - **/coverage/**
   - **/*.generated.*
+  - **/*.min.js
 Skill bundles:
   - root bundle files: 3/3 installed
   - package-local bundles: 2/3 packages

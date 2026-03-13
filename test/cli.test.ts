@@ -71,6 +71,8 @@ describe("cli", () => {
 
     expect(output).toContain("Config: not found (using built-in defaults)");
     expect(output).toContain("Ignore patterns (built-in defaults):");
+    expect(output).toContain("  - **/build/**");
+    expect(output).toContain("  - **/*.min.js");
     expect(output).toContain("  - **/node_modules/**");
     expect(output).toContain("  - root bundle files: 0/3 installed");
     expect(output).toContain("  - package-local bundles: 0/1 packages");

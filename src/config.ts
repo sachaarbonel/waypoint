@@ -55,6 +55,21 @@ const defaultRules: Record<string, NormalizedConfig["rules"][string]> = {
   "boundary-violation": { enabled: true, maxLines: 45, maxDepth: 3, maxParams: 4 },
 } satisfies NormalizedConfig["rules"];
 
+export const defaultIgnorePatterns = [
+  "**/dist/**",
+  "**/build/**",
+  "**/.next/**",
+  "**/coverage/**",
+  "**/*.generated.*",
+  "**/__snapshots__/**",
+  "**/*.min.js",
+  "**/vendor/**",
+  "**/vendors/**",
+  "**/node_modules/**",
+  "**/fixtures/**",
+  "**/migrations/**",
+] as const;
+
 export function defineConfig(config: WayweftConfig): WayweftConfig {
   return config;
 }
@@ -142,15 +157,7 @@ export function normalizeConfig(config: WayweftConfig): NormalizedConfig {
       baselineFile: config.analysis?.baselineFile ?? ".wayweft-baseline.json",
     },
     rules: mergeRules(config.rules),
-    ignore: config.ignore ?? [
-      "**/dist/**",
-      "**/coverage/**",
-      "**/*.generated.*",
-      "**/__snapshots__/**",
-      "**/node_modules/**",
-      "**/fixtures/**",
-      "**/migrations/**",
-    ],
+    ignore: config.ignore ?? [...defaultIgnorePatterns],
     packages: config.packages ?? {},
     boundaries: config.boundaries ?? [],
   };

@@ -1,7 +1,7 @@
 import path from "node:path";
 import { Project } from "ts-morph";
 import { loadConfig } from "../config";
-import { discoverWorkspace, matchesIgnore } from "../workspace";
+import { discoverWorkspace } from "../workspace";
 import type { Finding, ScanOptions, ScanResult } from "../types";
 import { runRules } from "./rules";
 
@@ -23,9 +23,7 @@ export async function scanWorkspace(options: ScanOptions): Promise<ScanResult> {
   });
 
   for (const filePath of workspace.fileInventory) {
-    if (!matchesIgnore(filePath, workspace.rootDir, config.ignore)) {
-      project.addSourceFileAtPathIfExists(filePath);
-    }
+    project.addSourceFileAtPathIfExists(filePath);
   }
 
   let findings = runRules(workspace, config, project);
