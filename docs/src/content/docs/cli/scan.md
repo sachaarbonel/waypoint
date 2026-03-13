@@ -9,9 +9,9 @@ slug: docs/cli/scan
 ## Common examples
 
 ```bash
-wayweft scan --scope workspace --format text
-wayweft scan --scope package:web --format json --output .tmp/wayweft.json
-wayweft scan --scope changed --since origin/main --format sarif
+wayweft scan --cwd /path/to/repo --scope workspace --format text
+wayweft scan --cwd /path/to/repo --scope package:web --format json --output .tmp/wayweft.json
+wayweft scan --cwd /path/to/repo --scope changed --since origin/main --format sarif
 ```
 
 ## When to use it

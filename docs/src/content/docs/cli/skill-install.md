@@ -9,13 +9,13 @@ slug: docs/cli/skill-install
 ## Install into the current repo
 
 ```bash
-wayweft skill install
+wayweft skill install --cwd /path/to/project
 ```
 
 If you are invoking the built CLI from this repo:
 
 ```bash
-node /absolute/path/to/wayweft/dist/cli.js skill install
+node /absolute/path/to/wayweft/dist/cli.js skill install --cwd /path/to/project
 ```
 
 ## Installed files
@@ -25,6 +25,5 @@ The command writes the bundle and guidance files used by supported agents, inclu
 ## Recommended flow
 
 - build or link the CLI
-- change into the target repository
 - run `skill install`
 - commit the generated guidance so future sessions inherit the workflow

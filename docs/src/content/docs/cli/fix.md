@@ -11,7 +11,7 @@ slug: docs/cli/fix
 Preview the planned edits:
 
 ```bash
-wayweft fix --dry-run
+wayweft fix --cwd /path/to/repo --dry-run
 ```
 
 This keeps the workflow reviewable before touching files.

@@ -23,11 +23,12 @@ npm install
 npm run build
 npm run test
 
-wayweft scan --scope workspace --format text
-wayweft scan --scope package:<name> --format json --output .tmp/wayweft.json
-wayweft fix --dry-run
-wayweft skill install
-wayweft doctor
+wayweft --help
+wayweft scan --cwd /path/to/repo --scope workspace --format text
+wayweft scan --cwd /path/to/repo --scope package:<name> --format json --output .tmp/wayweft.json
+wayweft fix --cwd /path/to/repo --dry-run
+wayweft skill install --cwd /path/to/repo
+wayweft doctor --cwd /path/to/repo
 ```
 
 ## Run locally on a project
@@ -39,13 +40,13 @@ npm install
 npm run build
 ```
 
-Then scan a target project by changing into that project directory and invoking the built CLI:
+Then scan a target project from any working directory by pointing the CLI at the repo:
 
 ```bash
-cd /path/to/project
-node /absolute/path/to/wayweft/dist/cli.js scan --scope workspace --format text
-node /absolute/path/to/wayweft/dist/cli.js scan --scope package:web --format json --output .tmp/wayweft.json
-node /absolute/path/to/wayweft/dist/cli.js fix --dry-run
+node /absolute/path/to/wayweft/dist/cli.js --help
+node /absolute/path/to/wayweft/dist/cli.js scan --cwd /path/to/project --scope workspace --format text
+node /absolute/path/to/wayweft/dist/cli.js scan --cwd /path/to/project --scope package:web --format json --output .tmp/wayweft.json
+node /absolute/path/to/wayweft/dist/cli.js fix --cwd /path/to/project --dry-run
 ```
 
 If you want `wayweft` available as a normal shell command, link it globally from this repo:
@@ -54,29 +55,26 @@ If you want `wayweft` available as a normal shell command, link it globally from
 npm link
 ```
 
-Then use it inside any project:
+Then use it from anywhere:
 
 ```bash
-cd /path/to/project
-wayweft scan --scope workspace --format text
-wayweft skill install
-wayweft doctor
+wayweft scan --cwd /path/to/project --scope workspace --format text
+wayweft skill install --cwd /path/to/project
+wayweft doctor --cwd /path/to/project
 ```
 
 ## Install the skill in a target repo
 
-From the target repository root, install the skill bundle with the built CLI:
+Install the skill bundle into a target repository with the built CLI:
 
 ```bash
-cd /path/to/project
-node /absolute/path/to/wayweft/dist/cli.js skill install
+node /absolute/path/to/wayweft/dist/cli.js skill install --cwd /path/to/project
 ```
 
 If you already linked the package globally with `npm link`, use:
 
 ```bash
-cd /path/to/project
-wayweft skill install
+wayweft skill install --cwd /path/to/project
 ```
 
 This writes the portable skill bundle and guidance files into the target repo, including:
@@ -88,8 +86,6 @@ This writes the portable skill bundle and guidance files into the target repo, i
 - `CLAUDE.md`
 
 For monorepos, it also writes package-local copies under each discovered workspace package.
-
-Note: the current CLI uses the current working directory as the scan target. A dedicated `--cwd` flag is not implemented yet.
 
 ## Documentation site
 

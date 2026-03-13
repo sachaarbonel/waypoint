@@ -13,6 +13,7 @@ This changelog is intentionally lightweight. Record user-visible features, fixes
 - Introduced a self-hosted Astro + Starlight documentation site under `docs/`.
 - Added a branded landing page at `/` and moved the documentation to `/docs/`.
 - Added starter documentation for setup, CLI usage, configuration, CI, roadmap, and branding direction.
+- Added CLI `--cwd` support and basic `--help` output for the primary commands.
 
 ### Changed
 

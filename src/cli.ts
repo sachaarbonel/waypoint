@@ -1,48 +1,292 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { formatJsonReport, formatMarkdownReport, formatSarifReport, formatTextReport } from "./reporters/index.js";
 import { applySafeFixes } from "./fixes/index.js";
 import { installSkillBundles } from "./skills/index.js";
 import { scanWorkspace } from "./analyzer/index.js";
-import { defineConfig } from "./config.js";
 
 type Format = "text" | "json" | "sarif" | "markdown";
+type CommandName = "scan" | "fix" | "init" | "doctor" | "skill-install";
+type HelpTopic = "root" | CommandName;
 
-async function main() {
-  const [command = "scan", ...args] = process.argv.slice(2);
-  const parsed = parseArgs(args);
+interface ParsedArgs {
+  cwd: string;
+  scope?: string;
+  format: Format;
+  output?: string;
+  since?: string;
+  changedOnly?: boolean;
+  maxFindings?: number;
+  minScore?: number;
+  rule?: string;
+  apply?: boolean;
+  dryRun?: boolean;
+}
 
-  switch (command) {
-    case "scan":
-      await runScan(parsed);
-      break;
-    case "report":
-      await runScan(parsed);
-      break;
-    case "fix":
-      await runFix(parsed);
-      break;
-    case "init":
-      runInit(process.cwd());
-      break;
-    case "skill":
-      if (args[0] === "install") {
-        await runSkillInstall(process.cwd());
-        break;
-      }
-      throw new Error("Unsupported skill subcommand.");
-    case "doctor":
-      await runDoctor(process.cwd());
-      break;
-    default:
-      throw new Error(`Unknown command: ${command}`);
+type CliInvocation =
+  | {
+      kind: "help";
+      topic: HelpTopic;
+    }
+  | {
+      kind: "command";
+      command: CommandName;
+      parsed: ParsedArgs;
+    };
+
+const rootHelp = `Usage: wayweft <command> [options]
+
+Commands:
+  scan            Analyze a workspace or selected scope
+  report          Alias for scan
+  fix             Preview or apply safe rewrites
+  doctor          Check workspace discovery and scan health
+  init            Write a starter config and skill bundles
+  skill install   Install the Wayweft skill bundle into a target repo
+
+Common flags:
+  --cwd <path>    Run a command against a target repository
+  --help          Show help for the root command or a subcommand
+
+Examples:
+  wayweft --help
+  wayweft scan --cwd /path/to/repo --scope workspace --format text
+  wayweft fix --cwd /path/to/repo --dry-run
+  wayweft doctor --cwd /path/to/repo
+  wayweft skill install --cwd /path/to/repo`;
+
+const commandHelp: Record<HelpTopic, string> = {
+  root: rootHelp,
+  scan: `Usage: wayweft scan [options]
+
+Analyze a workspace or selected scope.
+
+Options:
+  --cwd <path>         Run against a target repository
+  --scope <value>      workspace | package:<name> | path:<path> | changed | since:<ref>
+  --format <value>     text | json | markdown | sarif
+  --output <path>      Write the rendered report to a file
+  --since <ref>        Git ref used with changed/since scopes
+  --changed-only       Limit analysis to changed files
+  --max-findings <n>   Cap the number of findings returned
+  --min-score <n>      Override the minimum score threshold
+  --rule <ruleId>      Limit output to a single rule
+  --help               Show this help
+
+Examples:
+  wayweft scan --cwd /path/to/repo --scope workspace --format text
+  wayweft scan --cwd /path/to/repo --scope changed --since origin/main --format sarif`,
+  fix: `Usage: wayweft fix [options]
+
+Preview or apply safe cleanup rewrites.
+
+Options:
+  --cwd <path>       Run against a target repository
+  --scope <value>    workspace | package:<name> | path:<path> | changed | since:<ref>
+  --since <ref>      Git ref used with changed/since scopes
+  --min-score <n>    Override the minimum score threshold
+  --rule <ruleId>    Limit fixes to a single rule
+  --apply            Apply the safe rewrites
+  --dry-run          Preview fixes without editing files
+  --help             Show this help
+
+Examples:
+  wayweft fix --cwd /path/to/repo --dry-run
+  wayweft fix --cwd /path/to/repo --scope package:web --rule prefer-optional-chaining --apply`,
+  doctor: `Usage: wayweft doctor [options]
+
+Check workspace discovery and basic scan health.
+
+Options:
+  --cwd <path>     Run against a target repository
+  --help           Show this help
+
+Example:
+  wayweft doctor --cwd /path/to/repo`,
+  init: `Usage: wayweft init [options]
+
+Write a starter config and install local Wayweft guidance files.
+
+Options:
+  --cwd <path>     Initialize a target repository
+  --help           Show this help
+
+Example:
+  wayweft init --cwd /path/to/repo`,
+  "skill-install": `Usage: wayweft skill install [options]
+
+Install the portable Wayweft skill bundle into a target repository.
+
+Options:
+  --cwd <path>     Install into a target repository
+  --help           Show this help
+
+Example:
+  wayweft skill install --cwd /path/to/repo`,
+};
+
+export async function main(argv = process.argv.slice(2), shellCwd = process.cwd()) {
+  const output = await runCli(argv, shellCwd);
+  if (output) {
+    process.stdout.write(output.endsWith("\n") ? output : `${output}\n`);
   }
 }
 
-async function runScan(parsed: ParsedArgs) {
+export async function runCli(argv: string[], shellCwd: string): Promise<string> {
+  const invocation = parseCliArgs(argv, shellCwd);
+  if (invocation.kind === "help") {
+    return commandHelp[invocation.topic];
+  }
+
+  switch (invocation.command) {
+    case "scan":
+      return runScan(invocation.parsed);
+    case "fix":
+      return runFix(invocation.parsed);
+    case "init":
+      return runInit(invocation.parsed.cwd);
+    case "doctor":
+      return runDoctor(invocation.parsed.cwd);
+    case "skill-install":
+      return runSkillInstall(invocation.parsed.cwd);
+  }
+}
+
+export function parseCliArgs(argv: string[], shellCwd: string): CliInvocation {
+  const args = [...argv];
+  let cwd = shellCwd;
+
+  while (args.length > 0 && args[0].startsWith("-")) {
+    const arg = args.shift()!;
+    if (isHelpFlag(arg)) {
+      return { kind: "help", topic: "root" };
+    }
+    if (arg === "--cwd") {
+      cwd = resolveCliCwd(shellCwd, takeFlagValue(args, arg, "wayweft"));
+      continue;
+    }
+    throw new Error(`Unknown flag: ${arg}. Run \`wayweft --help\` for supported usage.`);
+  }
+
+  if (args.length === 0) {
+    return {
+      kind: "command",
+      command: "scan",
+      parsed: { cwd, format: "text" },
+    };
+  }
+
+  const command = args.shift()!;
+  if (command === "help") {
+    return { kind: "help", topic: parseHelpTopic(args) };
+  }
+
+  switch (command) {
+    case "scan":
+    case "report": {
+      if (args.some(isHelpFlag)) {
+        return { kind: "help", topic: "scan" };
+      }
+      const parsed = parseCommandArgs(args, command, cwd, shellCwd, {
+        format: "text",
+        valueFlags: {
+          "--cwd": "cwd",
+          "--scope": "scope",
+          "--format": "format",
+          "--output": "output",
+          "--since": "since",
+          "--max-findings": "maxFindings",
+          "--min-score": "minScore",
+          "--rule": "rule",
+        },
+        booleanFlags: {
+          "--changed-only": "changedOnly",
+        },
+      });
+      return { kind: "command", command: "scan", parsed };
+    }
+    case "fix": {
+      if (args.some(isHelpFlag)) {
+        return { kind: "help", topic: "fix" };
+      }
+      const parsed = parseCommandArgs(args, "fix", cwd, shellCwd, {
+        format: "text",
+        valueFlags: {
+          "--cwd": "cwd",
+          "--scope": "scope",
+          "--since": "since",
+          "--min-score": "minScore",
+          "--rule": "rule",
+        },
+        booleanFlags: {
+          "--apply": "apply",
+          "--dry-run": "dryRun",
+        },
+      });
+      return { kind: "command", command: "fix", parsed };
+    }
+    case "doctor": {
+      if (args.some(isHelpFlag)) {
+        return { kind: "help", topic: "doctor" };
+      }
+      const parsed = parseCommandArgs(args, "doctor", cwd, shellCwd, {
+        format: "text",
+        valueFlags: {
+          "--cwd": "cwd",
+        },
+        booleanFlags: {},
+      });
+      return { kind: "command", command: "doctor", parsed };
+    }
+    case "init": {
+      if (args.some(isHelpFlag)) {
+        return { kind: "help", topic: "init" };
+      }
+      const parsed = parseCommandArgs(args, "init", cwd, shellCwd, {
+        format: "text",
+        valueFlags: {
+          "--cwd": "cwd",
+        },
+        booleanFlags: {},
+      });
+      return { kind: "command", command: "init", parsed };
+    }
+    case "skill": {
+      const subcommand = args.shift();
+      if (subcommand === undefined) {
+        throw new Error("Missing skill subcommand. Run `wayweft skill install --help` for supported usage.");
+      }
+      if (isHelpFlag(subcommand)) {
+        return { kind: "help", topic: "skill-install" };
+      }
+      if (subcommand !== "install") {
+        throw new Error(
+          `Unsupported skill subcommand: ${subcommand}. Run \`wayweft skill install --help\` for supported usage.`,
+        );
+      }
+      if (args.some(isHelpFlag)) {
+        return { kind: "help", topic: "skill-install" };
+      }
+
+      const parsed = parseCommandArgs(args, "skill install", cwd, shellCwd, {
+        format: "text",
+        valueFlags: {
+          "--cwd": "cwd",
+        },
+        booleanFlags: {},
+      });
+      return { kind: "command", command: "skill-install", parsed };
+    }
+    default:
+      throw new Error(`Unknown command: ${command}. Run \`wayweft --help\` for supported commands.`);
+  }
+}
+
+async function runScan(parsed: ParsedArgs): Promise<string> {
   const result = await scanWorkspace({
-    cwd: process.cwd(),
+    cwd: parsed.cwd,
     target: parseScope(parsed.scope, parsed.since),
     changedOnly: parsed.changedOnly,
     since: parsed.since,
@@ -55,14 +299,15 @@ async function runScan(parsed: ParsedArgs) {
   if (parsed.output) {
     mkdirSync(path.dirname(parsed.output), { recursive: true });
     writeFileSync(parsed.output, rendered, "utf8");
-  } else {
-    process.stdout.write(`${rendered}\n`);
+    return "";
   }
+
+  return rendered;
 }
 
-async function runFix(parsed: ParsedArgs) {
+async function runFix(parsed: ParsedArgs): Promise<string> {
   const result = await scanWorkspace({
-    cwd: process.cwd(),
+    cwd: parsed.cwd,
     target: parseScope(parsed.scope, parsed.since),
     since: parsed.since,
     minScore: parsed.minScore,
@@ -72,10 +317,10 @@ async function runFix(parsed: ParsedArgs) {
     ? result.findings.filter((finding) => finding.ruleId === parsed.rule)
     : result.findings;
   const fixResult = applySafeFixes(selected, Boolean(parsed.apply && !parsed.dryRun));
-  process.stdout.write(`${fixResult.preview}\n`);
+  return fixResult.preview;
 }
 
-function runInit(cwd: string) {
+function runInit(cwd: string): string {
   const configPath = path.join(cwd, "wayweft.config.ts");
   if (!existsSync(configPath)) {
     writeFileSync(
@@ -106,10 +351,10 @@ export default defineConfig({
     );
   }
   installSkillBundles({ rootDir: cwd });
-  process.stdout.write("Initialized Wayweft config and skill bundles.\n");
+  return "Initialized Wayweft config and skill bundles.";
 }
 
-async function runSkillInstall(cwd: string) {
+async function runSkillInstall(cwd: string): Promise<string> {
   const result = await scanWorkspace({
     cwd,
     target: { scope: "workspace" },
@@ -118,23 +363,21 @@ async function runSkillInstall(cwd: string) {
     rootDir: result.workspace.rootDir,
     packageDirs: result.workspace.packages.map((pkg) => pkg.dir),
   });
-  process.stdout.write(`Installed skill bundles:\n${written.map((item) => `- ${item}`).join("\n")}\n`);
+  return `Installed skill bundles:\n${written.map((item) => `- ${item}`).join("\n")}`;
 }
 
-async function runDoctor(cwd: string) {
+async function runDoctor(cwd: string): Promise<string> {
   const result = await scanWorkspace({
     cwd,
     target: { scope: "workspace" },
     maxFindings: 1,
   });
-  process.stdout.write(
-    [
-      `Workspace root: ${result.workspace.rootDir}`,
-      `Packages: ${result.workspace.packages.length}`,
-      `Files: ${result.workspace.fileInventory.length}`,
-      "Doctor checks: ok",
-    ].join("\n") + "\n",
-  );
+  return [
+    `Workspace root: ${result.workspace.rootDir}`,
+    `Packages: ${result.workspace.packages.length}`,
+    `Files: ${result.workspace.fileInventory.length}`,
+    "Doctor checks: ok",
+  ].join("\n");
 }
 
 function formatResult(result: Awaited<ReturnType<typeof scanWorkspace>>, format: Format): string {
@@ -150,54 +393,110 @@ function formatResult(result: Awaited<ReturnType<typeof scanWorkspace>>, format:
   }
 }
 
-interface ParsedArgs {
-  scope?: string;
-  format: Format;
-  output?: string;
-  since?: string;
-  changedOnly?: boolean;
-  maxFindings?: number;
-  minScore?: number;
-  rule?: string;
-  apply?: boolean;
-  dryRun?: boolean;
+function parseHelpTopic(args: string[]): HelpTopic {
+  const [command, subcommand] = args;
+  if (!command) {
+    return "root";
+  }
+  if (command === "scan" || command === "report") {
+    return "scan";
+  }
+  if (command === "fix") {
+    return "fix";
+  }
+  if (command === "doctor") {
+    return "doctor";
+  }
+  if (command === "init") {
+    return "init";
+  }
+  if (command === "skill" && subcommand === "install") {
+    return "skill-install";
+  }
+  throw new Error(`Unknown help topic: ${[command, subcommand].filter(Boolean).join(" ")}. Run \`wayweft --help\`.`);
 }
 
-function parseArgs(args: string[]): ParsedArgs {
-  const parsed: ParsedArgs = { format: "text" };
+function parseCommandArgs(
+  args: string[],
+  commandLabel: string,
+  defaultCwd: string,
+  shellCwd: string,
+  options: {
+    format: Format;
+    valueFlags: Record<string, keyof ParsedArgs>;
+    booleanFlags: Record<string, keyof ParsedArgs>;
+  },
+): ParsedArgs {
+  const parsed: ParsedArgs = {
+    cwd: defaultCwd,
+    format: options.format,
+  };
+
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
-    const next = args[index + 1];
-    if (arg === "--scope") {
-      parsed.scope = next;
-      index += 1;
-    } else if (arg === "--format") {
-      parsed.format = next as Format;
-      index += 1;
-    } else if (arg === "--output") {
-      parsed.output = next;
-      index += 1;
-    } else if (arg === "--since") {
-      parsed.since = next;
-      index += 1;
-    } else if (arg === "--changed-only") {
-      parsed.changedOnly = true;
-    } else if (arg === "--max-findings") {
-      parsed.maxFindings = Number(next);
-      index += 1;
-    } else if (arg === "--min-score") {
-      parsed.minScore = Number(next);
-      index += 1;
-    } else if (arg === "--rule") {
-      parsed.rule = next;
-      index += 1;
-    } else if (arg === "--apply") {
-      parsed.apply = true;
-    } else if (arg === "--dry-run") {
-      parsed.dryRun = true;
+    if (!arg.startsWith("-")) {
+      throw new Error(`Unsupported argument: ${arg}. Run \`wayweft ${commandLabel} --help\` for usage.`);
     }
+
+    if (arg in options.valueFlags) {
+      const value = args[index + 1];
+      if (!value || value.startsWith("-")) {
+        throw new Error(`Flag ${arg} requires a value. Run \`wayweft ${commandLabel} --help\` for usage.`);
+      }
+
+      const key = options.valueFlags[arg];
+      if (key === "cwd") {
+        parsed.cwd = resolveCliCwd(shellCwd, value);
+      } else if (key === "minScore" || key === "maxFindings") {
+        const numericValue = Number(value);
+        if (Number.isNaN(numericValue)) {
+          throw new Error(`Flag ${arg} requires a number. Run \`wayweft ${commandLabel} --help\` for usage.`);
+        }
+        parsed[key] = numericValue;
+      } else if (key === "format") {
+        parsed.format = parseFormat(value, commandLabel);
+      } else if (key === "output") {
+        parsed.output = path.resolve(shellCwd, value);
+      } else if (key === "scope") {
+        parsed.scope = value;
+      } else if (key === "since") {
+        parsed.since = value;
+      } else if (key === "rule") {
+        parsed.rule = value;
+      } else {
+        throw new Error(`Unexpected value flag mapping: ${String(key)}`);
+      }
+      index += 1;
+      continue;
+    }
+
+    if (arg in options.booleanFlags) {
+      const key = options.booleanFlags[arg];
+      if (key === "changedOnly") {
+        parsed.changedOnly = true;
+      } else if (key === "apply") {
+        parsed.apply = true;
+      } else if (key === "dryRun") {
+        parsed.dryRun = true;
+      } else {
+        throw new Error(`Unexpected boolean flag mapping: ${String(key)}`);
+      }
+      continue;
+    }
+
+    throw new Error(`Unknown flag: ${arg}. Run \`wayweft ${commandLabel} --help\` for usage.`);
   }
+
   return parsed;
+}
+
+function parseFormat(value: string, commandLabel: string): Format {
+  if (value === "text" || value === "json" || value === "sarif" || value === "markdown") {
+    return value;
+  }
+  throw new Error(
+    `Unsupported format: ${value}. Use text, json, markdown, or sarif. Run \`wayweft ${commandLabel} --help\`.`,
+  );
 }
 
 function parseScope(scopeValue?: string, since?: string) {
@@ -219,8 +518,31 @@ function parseScope(scopeValue?: string, since?: string) {
   return { scope: "workspace" as const };
 }
 
-void main().catch((error: unknown) => {
-  const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`${message}\n`);
-  process.exitCode = 1;
-});
+function resolveCliCwd(shellCwd: string, value: string): string {
+  return path.resolve(shellCwd, value);
+}
+
+function takeFlagValue(args: string[], flag: string, commandLabel: string): string {
+  const value = args.shift();
+  if (!value || value.startsWith("-")) {
+    throw new Error(`Flag ${flag} requires a value. Run \`wayweft ${commandLabel} --help\` for usage.`);
+  }
+  return value;
+}
+
+function isHelpFlag(arg: string) {
+  return arg === "--help" || arg === "-h";
+}
+
+function isDirectExecution() {
+  const entry = process.argv[1];
+  return Boolean(entry) && import.meta.url === pathToFileURL(entry).href;
+}
+
+if (isDirectExecution()) {
+  void main().catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    process.stderr.write(`${message}\n`);
+    process.exitCode = 1;
+  });
+}

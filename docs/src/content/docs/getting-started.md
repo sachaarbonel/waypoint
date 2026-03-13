@@ -21,22 +21,22 @@ npm run build
 
 ## First run
 
-Scan the current workspace:
+Scan a target workspace:
 
 ```bash
-wayweft scan --scope workspace --format text
+wayweft scan --cwd /path/to/project --scope workspace --format text
 ```
 
 If you have not linked the package globally yet, run the built CLI directly:
 
 ```bash
-node dist/cli.js scan --scope workspace --format text
+node dist/cli.js scan --cwd /path/to/project --scope workspace --format text
 ```
 
 Run a dry-run safe fix pass:
 
 ```bash
-wayweft fix --dry-run
+wayweft fix --cwd /path/to/project --dry-run
 ```
 
 ## Agent workflow basics

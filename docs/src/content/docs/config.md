@@ -12,9 +12,9 @@ Wayweft is intentionally light on configuration in its current form.
 - output format selection through CLI flags
 - changed-scope scanning relative to a Git reference
 
-## Important constraint
+## Current CLI behavior
 
-The current CLI operates on the current working directory. A dedicated `--cwd` flag is not implemented yet, so run the command from the target repository root.
+Most commands can target another repository directly with `--cwd`, so you do not need to change directories before running a scan, fix, doctor check, or skill install.
 
 ## Near-term direction
 
