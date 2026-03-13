@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+import { readFile, rm, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
 import { existsSync } from "node:fs";
@@ -66,10 +68,10 @@ export async function loadConfig(cwd: string): Promise<NormalizedConfig> {
   if (configPath) {
     if (configPath.endsWith(".json")) {
       loaded = configSchema.parse(
-        JSON.parse(await import("node:fs/promises").then((fs) => fs.readFile(configPath, "utf8"))),
+        JSON.parse(await readFile(configPath, "utf8")),
       );
     } else if (configPath.endsWith(".ts")) {
-      const source = await import("node:fs/promises").then((fs) => fs.readFile(configPath, "utf8"));
+      const source = await readFile(configPath, "utf8");
       const transpiled = ts.transpileModule(source, {
         compilerOptions: {
           module: ts.ModuleKind.ESNext,
@@ -77,9 +79,18 @@ export async function loadConfig(cwd: string): Promise<NormalizedConfig> {
         },
         fileName: configPath,
       });
-      const moduleUrl = `data:text/javascript;base64,${Buffer.from(transpiled.outputText).toString("base64")}`;
-      const module = (await import(moduleUrl)) as { default?: WayweftConfig };
-      loaded = configSchema.parse(module.default ?? {});
+      const tempConfigPath = path.join(
+        path.dirname(configPath),
+        `.wayweft.config.${randomUUID()}.mjs`,
+      );
+
+      await writeFile(tempConfigPath, transpiled.outputText, "utf8");
+      try {
+        const module = (await import(pathToFileURL(tempConfigPath).href)) as { default?: WayweftConfig };
+        loaded = configSchema.parse(module.default ?? {});
+      } finally {
+        await rm(tempConfigPath, { force: true });
+      }
     } else {
       const module = (await import(pathToFileURL(configPath).href)) as { default?: WayweftConfig };
       loaded = configSchema.parse(module.default ?? {});

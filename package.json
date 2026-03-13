@@ -16,6 +16,8 @@
   "scripts": {
     "build": "tsup src/index.ts src/cli.ts --format esm --dts --clean",
     "dev": "tsx src/cli.ts",
+    "dogfood": "npm run build && node dist/cli.js scan --cwd . --scope workspace --format text",
+    "dogfood:changed": "npm run build && mkdir -p .tmp && node dist/cli.js scan --cwd . --scope changed --since origin/main --format sarif --output .tmp/wayweft.sarif",
     "docs:dev": "npm --prefix docs run dev",
     "docs:build": "npm --prefix docs run build",
     "docs:preview": "npm --prefix docs run preview",

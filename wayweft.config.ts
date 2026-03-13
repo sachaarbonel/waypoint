@@ -1,6 +1,4 @@
-import { defineConfig } from "./src/config.js";
-
-export default defineConfig({
+export default {
   workspace: {
     rootMarkers: ["pnpm-workspace.yaml", "turbo.json", "nx.json", "package.json", ".git"],
     packageGlobs: ["apps/*", "packages/*", "services/*", "libs/*"],
@@ -26,4 +24,4 @@ export default defineConfig({
     "**/__snapshots__/**",
     "**/node_modules/**",
   ],
-});
+};
